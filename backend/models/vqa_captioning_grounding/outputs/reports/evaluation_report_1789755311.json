@@ -1,0 +1,77 @@
+{
+  "total_time_sec": 79.99,
+  "results": [
+    {
+      "task": "vqa",
+      "modality": "optical",
+      "status": "success",
+      "latency_sec": 19.847,
+      "confidence": 0.65,
+      "model_used": "Salesforce/blip-vqa-base",
+      "text_answer": "Trees",
+      "evidence_count": 0,
+      "overlay_path": null,
+      "error_message": null
+    },
+    {
+      "task": "captioning",
+      "modality": "optical",
+      "status": "success",
+      "latency_sec": 11.778,
+      "confidence": 0.923,
+      "model_used": "Salesforce/blip-image-captioning-base",
+      "text_answer": "A high - resolution satellite aerial view showing the distance of a satellite from a high - resolution satellite.",
+      "evidence_count": 0,
+      "overlay_path": null,
+      "error_message": null
+    },
+    {
+      "task": "grounding",
+      "modality": "optical",
+      "status": "success",
+      "latency_sec": 23.47,
+      "confidence": 0.774,
+      "model_used": "google/owlv2-base-patch16-ensemble + facebook/sam-vit-base",
+      "text_answer": "Detected 4 region(s) matching 'buildings'.",
+      "evidence_count": 8,
+      "overlay_path": "D:\\Project\\SIH\\SATQuery-AI\\backend\\models\\vqa_captioning_grounding\\outputs\\optical\\grounding\\overlays\\optical_scene_eval_overlay.png",
+      "error_message": null
+    },
+    {
+      "task": "vqa",
+      "modality": "sar",
+      "status": "success",
+      "latency_sec": 4.818,
+      "confidence": 0.641,
+      "model_used": "Salesforce/blip-vqa-base",
+      "text_answer": "Mountains [Note: SAR image was converted to false-color visualization for VLM input. Results reflect visual pattern interpretation, not native SAR backscatter analysis.]",
+      "evidence_count": 0,
+      "overlay_path": null,
+      "error_message": null
+    },
+    {
+      "task": "captioning",
+      "modality": "sar",
+      "status": "success",
+      "latency_sec": 4.613,
+      "confidence": 0.897,
+      "model_used": "Salesforce/blip-image-captioning-base",
+      "text_answer": "A synthetic aperture radar sar satellite view showing the path of a particle ' s magnetic field. [Note: SAR image converted to false-color visualization for VLM input.]",
+      "evidence_count": 0,
+      "overlay_path": null,
+      "error_message": null
+    },
+    {
+      "task": "grounding",
+      "modality": "sar",
+      "status": "success",
+      "latency_sec": 15.462,
+      "confidence": 0.845,
+      "model_used": "google/owlv2-base-patch16-ensemble + facebook/sam-vit-base",
+      "text_answer": "Detected 1 region(s) matching 'structures'. [SAR preprocessed to grayscale-as-RGB for OWLv2 input. Not native SAR understanding.]",
+      "evidence_count": 2,
+      "overlay_path": "D:\\Project\\SIH\\SATQuery-AI\\backend\\models\\vqa_captioning_grounding\\outputs\\sar\\grounding\\overlays\\sar_scene_eval_overlay.png",
+      "error_message": null
+    }
+  ]
+}
