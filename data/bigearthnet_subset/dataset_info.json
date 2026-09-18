@@ -1,0 +1,28 @@
+{
+  "dataset_name": "BigEarthNet-LoRA-Subset",
+  "total_samples": 1500,
+  "train_samples": 801,
+  "val_samples": 699,
+  "target_resolution": [
+    224,
+    224
+  ],
+  "image_format": "PNG",
+  "channels": 3,
+  "optical_dir": "images/",
+  "sar_dir": "sar/",
+  "jsonl_files": {
+    "train": "train.jsonl",
+    "val": "val.jsonl",
+    "all": "dataset.jsonl"
+  },
+  "schema_description": {
+    "id": "Unique BigEarthNet patch identifier",
+    "image_path": "Relative path to normalized optical RGB image",
+    "sar_path": "Relative path to normalized SAR dual-pol image (or null)",
+    "text": "Evidence-grounded caption for VLM text instruction / fine-tuning",
+    "labels": "List of CORINE Land Cover categorical labels",
+    "country": "Geographic country where patch was observed",
+    "split": "Original dataset split (train/validation/test)"
+  }
+}

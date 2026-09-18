@@ -1,0 +1,27 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Large datasets & raw data
+data/bigearthnet_raw/
+data/raw/
+data/bigearthnet_subset/images/
+data/bigearthnet_subset/sar/
+*.tar.gz
+*.zip
+*.tar
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
