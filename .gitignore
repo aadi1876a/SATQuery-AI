@@ -1,0 +1,70 @@
+# =============================================================================
+# SatQuery AI — Git Ignore Configuration
+# =============================================================================
+
+# Python Bytecode & Cache
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/*.pyo
+**/*.pyd
+
+# Virtual Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyTorch, Hugging Face Checkpoints & Model Weights
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+checkpoints/*/
+!checkpoints/**/.gitkeep
+**/checkpoints/*
+!**/checkpoints/**/.gitkeep
+
+# Generated Outputs & Cache from Inference / Tests
+**/outputs/**/vqa/*
+**/outputs/**/captioning/*
+**/outputs/**/grounding/masks/*
+**/outputs/**/grounding/overlays/*
+**/outputs/**/grounding/bboxes/*
+**/outputs/logs/*
+**/outputs/reports/*
+**/outputs/rs_training_samples/*
+!**/outputs/**/.gitkeep
+!**/outputs/test_images/**
+
+# Testing & Coverage Artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node / Frontend Artifacts
+node_modules/
+dist/
+build/
+.next/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
