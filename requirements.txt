@@ -1,0 +1,8 @@
+pydantic>=2.0
+pillow>=9.0
+numpy>=1.20
+opencv-python>=4.5
+pytest>=7.0
+torch>=2.0
+torchvision>=0.15
+transformers>=4.30
