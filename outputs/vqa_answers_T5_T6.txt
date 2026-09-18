@@ -1,0 +1,57 @@
+===========================================================================
+ SatQuery AI - P3 ToolOutput Schema-Compliant VQA Report (Satellite T5 vs T6)
+===========================================================================
+
+---------------------------------------------------------------------------
+❓ USER QUERY [COUNTING INTENT]: 'How many new structures and flood zones were created between T5 (2023) and T6 (2025)?'
+---------------------------------------------------------------------------
+• status:           "success"
+• model_used:       "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + Temporal VQA)"
+• confidence:       0.917
+• text_answer:
+    "A total of 4 distinct changed region(s) were identified between 2023-05-10 and 2025-01-20. Breakdown of detected additions/modifications: 1 Water Inundation / Flooding, 2 Structural & Land Cover Modification, 1 Vegetation Loss / Canopy Deforestation / Burn Scar."
+• raw_output_path:  "outputs\change_overlay_1789737228.png"
+• error_message:    None
+• spatial_evidence  (5 item(s)):
+    [1] SpatialEvidence(type="mask", coords=None, mask_path="outputs\change_mask_1789737228.png", label="Binary Change Mask")
+    [2] SpatialEvidence(type="bbox", coords=[0.4167, 0.5283, 0.8017, 0.9183], mask_path="None", label="Change Region #1")
+    [3] SpatialEvidence(type="bbox", coords=[0.1333, 0.1333, 0.335, 0.3683], mask_path="None", label="Change Region #2")
+    [4] SpatialEvidence(type="bbox", coords=[0.1333, 0.7167, 0.285, 0.885], mask_path="None", label="Change Region #3")
+    [5] SpatialEvidence(type="bbox", coords=[0.35, 0.1667, 0.435, 0.335], mask_path="None", label="Change Region #4")
+
+
+---------------------------------------------------------------------------
+❓ USER QUERY [LOCATION INTENT]: 'Where are the spatial changes located in the satellite scene?'
+---------------------------------------------------------------------------
+• status:           "success"
+• model_used:       "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + Temporal VQA)"
+• confidence:       0.917
+• text_answer:
+    "Detected 4 spatial change zone(s) between 2023-05-10 and 2025-01-20: Region #1 (Water Inundation / Flooding) located in the South-East quadrant; Region #2 (Structural & Land Cover Modification) located in the North-West quadrant; Region #3 (Structural & Land Cover Modification) located in the North-East quadrant; Region #4 (Vegetation Loss / Canopy Deforestation / Burn Scar) located in the North-West quadrant."
+• raw_output_path:  "outputs\change_overlay_1789737228.png"
+• error_message:    None
+• spatial_evidence  (5 item(s)):
+    [1] SpatialEvidence(type="mask", coords=None, mask_path="outputs\change_mask_1789737228.png", label="Binary Change Mask")
+    [2] SpatialEvidence(type="bbox", coords=[0.4167, 0.5283, 0.8017, 0.9183], mask_path="None", label="Change Region #1")
+    [3] SpatialEvidence(type="bbox", coords=[0.1333, 0.1333, 0.335, 0.3683], mask_path="None", label="Change Region #2")
+    [4] SpatialEvidence(type="bbox", coords=[0.1333, 0.7167, 0.285, 0.885], mask_path="None", label="Change Region #3")
+    [5] SpatialEvidence(type="bbox", coords=[0.35, 0.1667, 0.435, 0.335], mask_path="None", label="Change Region #4")
+
+
+---------------------------------------------------------------------------
+❓ USER QUERY [LAND COVER INTENT]: 'Describe the deforestation and river flooding land cover modifications'
+---------------------------------------------------------------------------
+• status:           "success"
+• model_used:       "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + Temporal VQA)"
+• confidence:       0.917
+• text_answer:
+    "Temporal analysis for query 'Describe the deforestation and river flooding land cover modifications' between 2023-05-10 and 2025-01-20 indicates significant Structural & Land Cover Modification and Water Inundation / Flooding and Vegetation Loss / Canopy Deforestation / Burn Scar. A total area footprint change of approx 20.71% was observed across 4 localized zone(s)."
+• raw_output_path:  "outputs\change_overlay_1789737228.png"
+• error_message:    None
+• spatial_evidence  (5 item(s)):
+    [1] SpatialEvidence(type="mask", coords=None, mask_path="outputs\change_mask_1789737228.png", label="Binary Change Mask")
+    [2] SpatialEvidence(type="bbox", coords=[0.4167, 0.5283, 0.8017, 0.9183], mask_path="None", label="Change Region #1")
+    [3] SpatialEvidence(type="bbox", coords=[0.1333, 0.1333, 0.335, 0.3683], mask_path="None", label="Change Region #2")
+    [4] SpatialEvidence(type="bbox", coords=[0.1333, 0.7167, 0.285, 0.885], mask_path="None", label="Change Region #3")
+    [5] SpatialEvidence(type="bbox", coords=[0.35, 0.1667, 0.435, 0.335], mask_path="None", label="Change Region #4")
+
