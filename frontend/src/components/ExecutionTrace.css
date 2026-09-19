@@ -1,0 +1,91 @@
+/* ── EXECUTION TRACE ─────────────────────────────────────── */
+.trace-pipeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Vertical guide line */
+.trace-pipeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 18px;
+  bottom: 18px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--accent-teal) 0%,
+    rgba(55, 230, 180, 0.1) 100%
+  );
+  z-index: 0;
+}
+
+.trace-step {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.trace-node {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border-panel);
+  background: var(--bg-main);
+  position: relative;
+  transition: all var(--transition-normal);
+}
+.trace-node.success {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  box-shadow: 0 0 8px rgba(55, 230, 180, 0.25);
+}
+.trace-node.error {
+  border-color: var(--accent-error);
+  color: var(--accent-error);
+}
+
+/* Active ripple on success nodes */
+.trace-node.success::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(55, 230, 180, 0.2);
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+.trace-content {
+  flex: 1;
+  background: rgba(14, 21, 28, 0.7);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-sm);
+  padding: 0.625rem 0.875rem;
+  min-width: 0;
+}
+
+.trace-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.trace-body {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-active);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

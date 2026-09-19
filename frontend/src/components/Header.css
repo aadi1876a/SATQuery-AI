@@ -1,0 +1,230 @@
+/* ── HUD HEADER ──────────────────────────────────────────── */
+.hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 1.25rem;
+  background: rgba(6, 10, 14, 0.96);
+  border-bottom: 1px solid var(--border-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+/* Subtle top-edge teal glow */
+.hud-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--accent-teal) 30%,
+    var(--accent-amber) 70%,
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
+/* ── BRAND ──────────────────────────────────────────────── */
+.hud-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-shrink: 0;
+}
+
+.hud-logo-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-logo-icon {
+  color: var(--accent-teal);
+  position: relative;
+  z-index: 1;
+}
+
+.hud-logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--accent-teal);
+  opacity: 0.4;
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.hud-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-active);
+  text-transform: uppercase;
+}
+
+.hud-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* ── CENTER PILLS ────────────────────────────────────────── */
+.hud-center {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hud-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.625rem;
+  border-radius: 2px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
+.hud-pill--teal {
+  color: var(--accent-teal);
+  border-color: rgba(55, 230, 180, 0.25);
+  background: rgba(55, 230, 180, 0.06);
+}
+
+.hud-pill--amber {
+  color: var(--accent-amber);
+  border-color: rgba(232, 168, 87, 0.25);
+  background: rgba(232, 168, 87, 0.06);
+}
+
+.hud-pill-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.hud-pill-dot--amber {
+  background: var(--accent-amber);
+}
+
+.hud-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border-panel);
+}
+
+/* ── RIGHT CLUSTER ────────────────────────────────────────── */
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+/* UTC Clock */
+.hud-clock {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.hud-clock-icon { opacity: 0.6; }
+.hud-clock-time {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-active);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+.hud-clock-label {
+  display: block;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  line-height: 1;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+/* Backend status */
+.hud-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-panel);
+  font-family: var(--font-mono);
+  transition: border-color var(--transition-fast);
+}
+.hud-status--connected {
+  border-color: rgba(55, 230, 180, 0.25);
+  background: rgba(55, 230, 180, 0.04);
+}
+.hud-status--disconnected {
+  border-color: rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.04);
+}
+.hud-status--processing {
+  border-color: rgba(232, 168, 87, 0.25);
+  background: rgba(232, 168, 87, 0.04);
+}
+.hud-status-info { display: flex; flex-direction: column; }
+.hud-status-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+.hud-status-sub {
+  font-size: 0.5rem;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+/* Coordinates */
+.hud-coords {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+.hud-coords svg { opacity: 0.5; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .hud-center { display: none; }
+  .hud-coords { display: none; }
+}
+@media (max-width: 768px) {
+  .hud-clock { display: none; }
+  .hud-subtitle { display: none; }
+}

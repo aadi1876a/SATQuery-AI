@@ -1,0 +1,58 @@
+/* ── RESULT PANEL ─────────────────────────────────────────── */
+.result-panel { }
+
+.result-answer-block {
+  padding: 0.875rem;
+  background: rgba(6, 10, 14, 0.5);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--text-main);
+}
+
+/* Confidence meter */
+.confidence-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confidence-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.confidence-svg { overflow: visible; }
+
+.confidence-track {
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.confidence-value {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  fill: var(--accent-teal);
+}
+
+/* Evidence count */
+.evidence-count-badge {
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+  line-height: 1;
+}
+.evidence-count-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

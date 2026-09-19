@@ -1,0 +1,197 @@
+/* ── DASHBOARD LAYOUT ────────────────────────────────────── */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+.dashboard-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  padding: 0.875rem;
+}
+
+/* ── ANALYSIS WORKSPACE ──────────────────────────────────── */
+.analysis-workspace {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 0.875rem;
+  height: 100%;
+  max-height: 100%;
+}
+
+.analysis-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.analysis-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ── LANDING ────────────────────────────────────────────── */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.landing-hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.landing-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-active);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(55, 230, 180, 0.3);
+}
+
+.landing-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  opacity: 0.85;
+  margin-top: 0.75rem;
+}
+
+/* Capability orbit ring */
+.capability-orbit {
+  position: relative;
+  width: 520px;
+  height: 200px;
+  margin-bottom: 3rem;
+}
+
+.cap-badge {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(14, 21, 28, 0.9);
+  border: 1px solid var(--border-panel);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  animation: float 5s ease-in-out infinite;
+  backdrop-filter: blur(8px);
+  transition: all var(--transition-normal);
+}
+.cap-badge:hover {
+  color: var(--accent-teal);
+  border-color: var(--accent-teal);
+  background: var(--accent-teal-dim);
+}
+
+/* Landing CTA */
+.landing-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-launch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2.5rem;
+  background: var(--accent-teal-dim);
+  color: var(--accent-teal);
+  border: 1px solid var(--accent-teal);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+.btn-launch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(55, 230, 180, 0.15) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+.btn-launch:hover {
+  background: rgba(55, 230, 180, 0.2);
+  box-shadow: var(--glow-teal), inset 0 0 20px rgba(55, 230, 180, 0.05);
+  transform: translateY(-2px);
+}
+.btn-launch:hover::before { opacity: 1; }
+.btn-launch:active { transform: translateY(0); }
+
+.demo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 1rem;
+  background: rgba(14, 21, 28, 0.9);
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+.demo-toggle.active {
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+  background: var(--accent-amber-dim);
+}
+.demo-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: var(--accent-amber);
+  font-family: inherit;
+  background: transparent;
+  border: 1px solid var(--border-panel);
+  border-radius: 2px;
+  padding: 0;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .analysis-workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    overflow-y: auto;
+  }
+  .analysis-right {
+    overflow-y: visible;
+  }
+}
