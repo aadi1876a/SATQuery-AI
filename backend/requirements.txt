@@ -1,0 +1,4 @@
+Pillow==12.3.0
+pydantic==2.13.5
+torch==2.14.0
+torchvision==0.29.0
