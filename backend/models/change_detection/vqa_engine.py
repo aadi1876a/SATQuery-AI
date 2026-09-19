@@ -102,6 +102,10 @@ class TemporalVQAEngine:
         # 1. Analyze spatial-spectral & VLM captioning properties for each region
         region_analyses, fallback_used = self._analyze_region_features(img_t1, img_t2, bboxes)
 
+        # Inject region labels back into the spatial evidence mapping for JSON output
+        for ev, analysis in zip(bboxes, region_analyses):
+            ev.label = analysis["change_type"]
+
         # 2. Determine Query Intent
         intent = self._classify_query_intent(query_lower)
 
@@ -222,19 +226,19 @@ class TemporalVQAEngine:
                     neutrality2 = abs(mean_r2 - mean_g2) + abs(mean_g2 - mean_b2) + abs(mean_b2 - mean_r2)
 
                     # Domain classification logic: Evaluate dominant spectral and structural signals
-                    # 1. Water Inundation / Flooding (High NDWI increase or blue/dark water shift over vegetation background)
-                    if d_ndwi > 0.05 or (mean_b2 > mean_r2 + 5 and ndvi2 < 0.15) or (ndwi2 > -0.05 and d_lum < -10):
-                        change_description = "Water Inundation / Surface Flooding"
-
-                    # 2. Water Body Recession / Lake Shrinkage
-                    elif d_ndwi < -0.12 or (d_lum > 25 and ndwi1 > 0.08 and ndwi2 < -0.05):
-                        change_description = "Water Body Recession / Lake Shrinkage"
+                    # 1. Water Dynamics (Inundation vs. Recession)
+                    # Covers Standard Dark Water, Rayleigh Shadow rejections, and shallow Cyan/Turquoise water
+                    if (d_ndwi > 0.15 and d_lum < 0) or (ndwi2 > 0.08 and mean_b2 > 35 and d_lum < -5 and ndvi2 < 0.25) or (ndwi2 > 0.1 and mean_b2 > 45) or (mean_b1 > 45 and d_ndwi < -0.02) or (ndwi2 > 0.03 and d_ndwi > 0.02 and d_lum > 5):
+                        if d_ndwi < -0.02:
+                            change_description = "Water Body Recession / Lake Shrinkage"
+                        else:
+                            change_description = "Water Inundation / Surface Flooding"
 
                     # 3. Significant Vegetation Loss / Deforestation (Prioritized if NDVI drop is prominent)
                     elif d_ndvi < -0.07 or (mean_g1 - mean_g2 > 12 and d_ndvi < -0.03):
                         if (d_lum > 15 and neutrality2 < 35) or d_edge > 4.0 or lum2 > 180:
                             change_description = "New Building / Concrete Structure"
-                        elif mean_b2 > mean_r2 + 10 or d_ndwi > 0.03:
+                        elif d_ndwi > 0.15 and d_lum < 0:
                             change_description = "Water Inundation / Surface Flooding"
                         else:
                             change_description = "Vegetation Loss / Crop Harvesting & Deforestation"

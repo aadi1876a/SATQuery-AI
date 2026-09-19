@@ -1,8 +1,0 @@
-Bi-Temporal Land Cover Report (T1 (Before) -> T2 (After)):
-• Dominant Scene Changes: Structural & Land Surface Modification, Water Inundation
-• Total Changed Footprint: ~46.1% of scene area across 3 zone(s)
-
-Observed Modifications:
-• Zone #1 (South-West quadrant): Water Inundation / Surface Flooding
-• Zone #2 (South-East quadrant): Water Inundation / Surface Flooding
-• Zone #3 (Center of the scene): Structural & Land Surface Modification
