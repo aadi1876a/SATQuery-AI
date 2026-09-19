@@ -1,0 +1,34 @@
+{
+  "status": "success",
+  "query": "Identify the predominant land cover by fusing optical and sar together.",
+  "answer": "Based on the fusion of Optical and SAR data: This image contains multiple distinct features. The primary land cover is Forest, but it also heavily features other elements.\nDetailed Analysis (Vegetation & Backscatter Breakdown): 96.5% Forest, 2.2% Urban, 1.3% Water",
+  "visual_evidence": [
+    {
+      "type": "none",
+      "coords": null,
+      "mask_path": null,
+      "label": null
+    }
+  ],
+  "confidence": 0.9649434089660645,
+  "execution_trace": {
+    "task_detected": "fusion_analysis",
+    "input_validation": {
+      "images_provided": 2,
+      "modalities": [
+        "sar",
+        "optical"
+      ],
+      "co_registered": true,
+      "format": "GeoTIFF",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "optical_sar_fusion_v1"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}
