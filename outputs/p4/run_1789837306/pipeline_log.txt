@@ -1,7 +1,0 @@
-OPTICAL IMAGE: real_s2.tif, SAR IMAGE: real_s1.tif, Source: real co-registered data
-QUERY: Identify the predominant land cover by fusing optical and sar together.
-TASK CLASSIFIED AS: fusion_analysis
-MODEL USED: optical_sar_fusion_v1
-ANSWER: Based on the fusion of Optical and SAR data: The predominant land cover is Forest.
-Detailed Analysis (Vegetation & Backscatter Breakdown): 100.0% Forest
-CONFIDENCE: 0.9999601244926453

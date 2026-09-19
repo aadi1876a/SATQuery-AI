@@ -1,55 +1,52 @@
-import shutil
 import os
 import sys
+import glob
+import random
 from PIL import Image
 
-brain_dir = r"C:\Users\kamda_k\.gemini\antigravity\brain\b682aa20-f47f-4598-82e4-56bfb07c37df"
-t1_src = os.path.join(brain_dir, "media__1789758046193.jpg")
-t2_src = os.path.join(brain_dir, "media__1789758054743.jpg")
-
-target_dir = os.path.abspath("sih26/sample_data")
-os.makedirs(target_dir, exist_ok=True)
-t1_dst = os.path.join(target_dir, "nirma_T1.jpg")
-t2_dst = os.path.join(target_dir, "nirma_T2.jpg")
-
-shutil.copy(t1_src, t1_dst)
-shutil.copy(t2_src, t2_dst)
-
-im1 = Image.open(t1_dst)
-im2 = Image.open(t2_dst)
-print(f"T1 image size: {im1.size}")
-print(f"T2 image size: {im2.size}")
-
-sih26_dir = os.path.abspath("sih26")
+sih26_dir = os.path.abspath(".")
 if sih26_dir not in sys.path:
     sys.path.insert(0, sih26_dir)
 
 from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from backend.models.change_detection.inference import call_change_model
 
+# Get all S2 images
+s2_images = glob.glob("data/bigearthnet_subset/images/S2*.png")
+if len(s2_images) < 2:
+    print("Not enough images in data to run verification!")
+    sys.exit(1)
+
+t1_dst, t2_dst = random.sample(s2_images, 2)
+
+im1 = Image.open(t1_dst)
+im2 = Image.open(t2_dst)
+print(f"T1 image ({os.path.basename(t1_dst)}) size: {im1.size}")
+print(f"T2 image ({os.path.basename(t2_dst)}) size: {im2.size}")
+
 img_t1 = ImageObject(
-    image_id="NIRMA_T1",
+    image_id=os.path.basename(t1_dst),
     file_path=t1_dst,
     modality=Modality.optical,
-    format="jpg",
+    format="png",
     bands=3,
-    resolution_m=0.5,
-    crs="EPSG:4326",
-    bbox=[72.548, 23.128, 72.558, 23.138],
+    resolution_m=10.0,
+    crs="EPSG:32634",
+    bbox=[0, 0, 1, 1], # Dummy bbox
     acquisition_date="Before (T1)",
     width=im1.width,
     height=im1.height
 )
 
 img_t2 = ImageObject(
-    image_id="NIRMA_T2",
+    image_id=os.path.basename(t2_dst),
     file_path=t2_dst,
     modality=Modality.optical,
-    format="jpg",
+    format="png",
     bands=3,
-    resolution_m=0.5,
-    crs="EPSG:4326",
-    bbox=[72.548, 23.128, 72.558, 23.138],
+    resolution_m=10.0,
+    crs="EPSG:32634",
+    bbox=[0, 0, 1, 1], # Dummy bbox
     acquisition_date="After (T2)",
     width=im2.width,
     height=im2.height
@@ -57,7 +54,7 @@ img_t2 = ImageObject(
 
 tool_input = ToolInput(
     task=TaskType.change_vqa,
-    query="What infrastructure, land cover, or building changes occurred between these two satellite images of Nirma University?",
+    query="What infrastructure, land cover, or building changes occurred between these two satellite images?",
     images=[img_t1, img_t2]
 )
 
@@ -74,3 +71,11 @@ print(output.text_answer)
 print("\n--- DETECTED SPATIAL EVIDENCE ---")
 for ev in output.spatial_evidence:
     print(f"Type: {ev.type} | Label: {ev.label} | Coords: {ev.coords} | Mask: {ev.mask_path}")
+
+# Copy T1 and T2 images to the output run folder
+import shutil
+if output.raw_output_path:
+    run_dir = os.path.dirname(output.raw_output_path)
+    shutil.copy(t1_dst, os.path.join(run_dir, "input_T1.png"))
+    shutil.copy(t2_dst, os.path.join(run_dir, "input_T2.png"))
+    print(f"Copied input images to: {run_dir}")

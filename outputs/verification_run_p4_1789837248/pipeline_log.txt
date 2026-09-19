@@ -1,6 +1,0 @@
-OPTICAL IMAGE: s2.tif, SAR IMAGE: s1.tif, Source: real co-registered data
-QUERY: Identify the predominant land cover by fusing optical and sar together.
-TASK CLASSIFIED AS: fusion_analysis
-MODEL USED: optical_sar_fusion_v1
-ANSWER: Based on the fusion of Optical and SAR data, the predominant land cover is Cloud.
-CONFIDENCE: 0.1264922022819519

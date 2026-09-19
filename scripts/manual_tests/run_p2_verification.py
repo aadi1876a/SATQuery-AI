@@ -14,12 +14,19 @@ from agent.controller import run_query
 import argparse
 from backend.app.validators.input_validator import extract_metadata
 
+import glob
+import random
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image", type=str, default="data/bigearthnet_subset/images/S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_80_58.png")
+    parser.add_argument("--image", type=str, default=None)
     parser.add_argument("--query-vqa", type=str, default="What land cover is visible in this satellite image?")
     parser.add_argument("--query-cap", type=str, default="Describe this scene.")
     args = parser.parse_args()
+    
+    if args.image is None:
+        images = glob.glob("data/bigearthnet_subset/images/*.png")
+        args.image = random.choice(images) if images else "data/bigearthnet_subset/images/S2A_MSIL2A_20170803T094031_N9999_R036_T34TCR_80_58.png"
     
     print("===========================================================================")
     print(" 🧠 SatQuery AI - P2 VQA & Captioning End-to-End Verification")
@@ -27,7 +34,7 @@ def main():
     
     # 1. Prepare Verification Folder
     timestamp = int(time.time())
-    output_dir = Path(f"outputs/verification_run_p2_{timestamp}")
+    output_dir = Path(f"outputs/p2/verification_run_{timestamp}")
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # 2. Setup Image

@@ -104,12 +104,9 @@ def run_captioning(tool_input: ToolInput) -> ToolOutput:
         device = get_device()
         pytorch = get_pytorch()
 
-        # Domain prompt: use provided query or default satellite context
-        prompt = (
-            tool_input.query.strip()
-            if tool_input.query and tool_input.query.strip()
-            else "A satellite aerial view showing"
-        )
+        # Domain prefix: BLIP is not instruction-tuned (LLaVA), so we cannot pass 
+        # instructions like "Describe this scene" as the generation prefix.
+        prompt = "A satellite aerial view showing"
 
         inputs = processor(pil_img, text=prompt, return_tensors="pt").to(device)
 
