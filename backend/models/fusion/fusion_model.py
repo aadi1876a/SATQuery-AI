@@ -30,11 +30,16 @@ class OpticalEncoder(nn.Module):
 class SAREncoder(nn.Module):
     def __init__(self, in_channels=1, feature_dim=256):
         super().__init__()
-        # Use a non-pretrained ResNet-18 for SAR, as SAR statistics differ wildly from ImageNet
-        resnet = models.resnet18(weights=None)
+        # Use a pretrained ResNet-18, then adapt conv1 for 1-channel
+        resnet = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
         
         # Modify the first convolutional layer to accept `in_channels` instead of 3
-        resnet.conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        # Average the weights from the 3 RGB channels to keep pretrained edge detection features
+        original_conv1 = resnet.conv1
+        new_conv1 = nn.Conv2d(in_channels, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        with torch.no_grad():
+            new_conv1.weight.copy_(original_conv1.weight.mean(dim=1, keepdim=True))
+        resnet.conv1 = new_conv1
         
         # Remove the final classification layer
         self.backbone = nn.Sequential(*list(resnet.children())[:-1])
@@ -65,9 +70,14 @@ class OpticalSARFusionModel(nn.Module):
         
         # Analysis head (Task: Classification)
         self.analysis_head = nn.Sequential(
-            nn.Linear(fused_dim, 128),
-            nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.Linear(fused_dim, 256),
+            nn.LeakyReLU(0.2),
+            nn.BatchNorm1d(256),
+            nn.Dropout(0.4),
+            nn.Linear(256, 128),
+            nn.LeakyReLU(0.2),
+            nn.BatchNorm1d(128),
+            nn.Dropout(0.4),
             nn.Linear(128, num_classes)
         )
 

@@ -1,0 +1,7 @@
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# ML model checkpoints
+backend/models/fusion/checkpoints/*.pth

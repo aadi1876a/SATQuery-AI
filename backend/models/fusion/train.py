@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
+from torchvision import transforms
 from backend.models.fusion.fusion_model import OpticalSARFusionModel
 
 # ---------------------------------------------------------
@@ -26,6 +27,16 @@ class SimulatedSatelliteDataset(Dataset):
         label = idx % self.num_classes
         opt_img = torch.ones(3, 224, 224) * (label * 0.1)
         sar_img = torch.ones(1, 224, 224) * (label * 0.1)
+        # Data Augmentation: Flips prevent overfitting on satellite imagery
+        if self.split == 'train':
+            # Concatenate for identical transform
+            combined = torch.cat([opt_img, sar_img], dim=0)
+            if torch.rand(1) > 0.5:
+                combined = transforms.functional.hflip(combined)
+            if torch.rand(1) > 0.5:
+                combined = transforms.functional.vflip(combined)
+            opt_img, sar_img = combined[:3], combined[3:]
+            
         return opt_img, sar_img, label
 
 class TrainConfig:
@@ -55,6 +66,9 @@ def train():
     model = OpticalSARFusionModel(num_classes=config.NUM_CLASSES, sar_in_channels=config.SAR_CHANNELS).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+    
+    # Cosine Annealing Learning Rate Scheduler for higher final accuracy
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.NUM_EPOCHS)
 
     best_val_loss = float('inf')
 
@@ -94,7 +108,10 @@ def train():
         avg_val_loss = val_loss / len(val_loader)
         val_acc = 100 * correct / total
         
-        print(f"Epoch [{epoch+1}/{config.NUM_EPOCHS}] Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val Acc: {val_acc:.2f}%")
+        print(f"Epoch [{epoch+1}/{config.NUM_EPOCHS}] Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val Acc: {val_acc:.2f}% | LR: {scheduler.get_last_lr()[0]:.6f}")
+
+        # Step the scheduler
+        scheduler.step()
 
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
