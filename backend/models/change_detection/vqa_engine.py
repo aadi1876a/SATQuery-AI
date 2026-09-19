@@ -269,13 +269,16 @@ class TemporalVQAEngine:
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"Temporal analysis between {date_t1} and {date_t2}: No significant surface changes were detected for query '{query}'."
+            return f"No change detected. Temporal analysis between {date_t1} and {date_t2} confirmed exactly zero structural or surface modifications."
 
+        unique_types = list(set([a["change_type"].split(" / ")[0] for a in analyses]))
+        summary_types = ", ".join(unique_types)
+        
         descriptions = [f"• Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses]
         details = "\n".join(descriptions)
         return (
             f"Bi-Temporal Change Analysis Report ({date_t1} -> {date_t2}):\n"
-            f"A total of {num_changes} distinct change region(s) were identified.\n\n"
+            f"Generated a count of {num_changes} distinct change region(s), involving: {summary_types}.\n\n"
             f"Detected Zone Breakdown:\n{details}"
         )
 
@@ -283,26 +286,31 @@ class TemporalVQAEngine:
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"Temporal analysis between {date_t1} and {date_t2}: No spatial change locations found for query '{query}'."
+            return f"No change detected. Spatial analysis between {date_t1} and {date_t2} found zero modified locations."
 
+        unique_types = list(set([a["change_type"].split(" / ")[0] for a in analyses]))
+        summary_types = ", ".join(unique_types)
+        
         loc_descriptions = [f"• Region #{a['index']} in {a['quadrant']}: {a['change_type']}" for a in analyses]
         loc_str = "\n".join(loc_descriptions)
         return (
             f"Bi-Temporal Spatial Location Report ({date_t1} -> {date_t2}):\n"
-            f"Identified {num_changes} spatial change zone(s) in scene:\n{loc_str}"
+            f"Identified {num_changes} spatial change zone(s) consisting of {summary_types}:\n{loc_str}"
         )
 
     def _generate_landcover_answer(
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], changed_pct: float, date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"Temporal land cover analysis between {date_t1} and {date_t2}: No modifications detected relating to '{query}'."
+            return f"No change detected. Temporal land cover analysis between {date_t1} and {date_t2} shows zero modifications."
 
+        unique_types = list(set([a["change_type"].split(" / ")[0] for a in analyses]))
+        summary_types = ", ".join(unique_types)
         details = "\n".join([f"• Zone #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses])
 
         return (
             f"Bi-Temporal Land Cover Report ({date_t1} -> {date_t2}):\n"
-            f"• Query Intent: '{query}'\n"
+            f"• Dominant Scene Changes: {summary_types}\n"
             f"• Total Changed Footprint: ~{changed_pct}% of scene area across {num_changes} zone(s)\n\n"
             f"Observed Modifications:\n{details}"
         )
@@ -311,12 +319,15 @@ class TemporalVQAEngine:
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], changed_pct: float, date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"Bi-Temporal Temporal VQA Summary ({date_t1} -> {date_t2}): No visual or structural surface changes detected."
+            return f"No change detected. Bi-Temporal Summary ({date_t1} -> {date_t2}): No visual or structural surface changes found."
 
+        unique_types = list(set([a["change_type"].split(" / ")[0] for a in analyses]))
+        summary_types = ", ".join(unique_types)
         details = "\n".join([f"• Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses])
 
         return (
-            f"Bi-Temporal VQA Summary ({date_t1} -> {date_t2}) for query '{query}':\n"
+            f"Bi-Temporal VQA Summary ({date_t1} -> {date_t2}):\n"
+            f"• Primary Modifications Detected: {summary_types}\n"
             f"• Scene Change Footprint: ~{changed_pct}% of total image area\n"
             f"• Total Change Clusters: {num_changes} primary region(s)\n\n"
             f"Observed Changes:\n{details}"
