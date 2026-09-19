@@ -87,3 +87,29 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 _quarantine/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Data and Outputs
+data/
+outputs/
+*.tif
+*.png
+*.jpg
+*.jpeg
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
