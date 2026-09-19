@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+env/
+venv/
+
+# PyTorch and Hugging Face Checkpoints & Model Weights
+checkpoints/
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# P2 Generated Inference Outputs
+**/outputs/**/masks/*.png
+**/outputs/**/overlays/*.png
+**/outputs/**/bboxes/*.json
+!**/outputs/**/.gitkeep
+backend/models/vqa_captioning_grounding/outputs/logs/
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,21 @@
+# Backend dependencies for SatQuery AI
+# Shared Schema & Pydantic
+pydantic>=2.0.0
+pillow>=9.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# PyTorch and Computer Vision
+# For CUDA wheels: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# For CPU wheels: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Hugging Face Model Ecosystem (P2: BLIP, OWLv2, SAM, PEFT/LoRA)
+transformers>=4.38.0
+accelerate>=0.26.0
+peft>=0.7.0
+
+# Image & Mask Processing
+opencv-python-headless>=4.7.0
+matplotlib>=3.7.0
