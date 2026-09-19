@@ -1,0 +1,10 @@
+﻿.env
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+*.tif
+checkpoints/
+node_modules/
+.git/
+outputs/
