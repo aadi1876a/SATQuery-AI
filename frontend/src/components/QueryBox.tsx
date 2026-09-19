@@ -7,9 +7,10 @@ interface QueryBoxProps {
   isLoading: boolean;
   disabled: boolean;
   placeholder?: string;
+  isDemoMode?: boolean;
 }
 
-const QueryBox: React.FC<QueryBoxProps> = ({ onSubmit, isLoading, disabled, placeholder = "Ask something about the satellite image..." }) => {
+const QueryBox: React.FC<QueryBoxProps> = ({ onSubmit, isLoading, disabled, placeholder = "Ask something about the satellite image...", isDemoMode }) => {
   const [query, setQuery] = useState('');
 
   const handleSubmit = () => {
@@ -27,7 +28,23 @@ const QueryBox: React.FC<QueryBoxProps> = ({ onSubmit, isLoading, disabled, plac
 
   return (
     <div className="query-box-container card">
-      <div className="card-header">AI Query</div>
+      <div className="card-header justify-between">
+        <span>AI Query</span>
+        {isDemoMode && (
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.55rem',
+            letterSpacing: '0.1em',
+            color: 'var(--accent-amber)',
+            border: '1px solid rgba(232,168,87,0.35)',
+            background: 'rgba(232,168,87,0.08)',
+            borderRadius: '2px',
+            padding: '0.15rem 0.4rem',
+          }}>
+            DEMO MODE ACTIVE
+          </span>
+        )}
+      </div>
       <div className="query-input-wrapper">
         <textarea
           className="query-textarea"
@@ -39,9 +56,11 @@ const QueryBox: React.FC<QueryBoxProps> = ({ onSubmit, isLoading, disabled, plac
           rows={3}
         />
         <div className="query-footer flex justify-between items-center">
-          <span className="query-hint">Press Ctrl + Enter to submit</span>
-          <button 
-            className="btn btn-primary btn-submit" 
+          <span className="query-hint">
+            {disabled ? 'Upload an image to enable queries' : 'Ctrl+Enter to submit'}
+          </span>
+          <button
+            className="btn btn-primary btn-submit"
             onClick={handleSubmit}
             disabled={!query.trim() || disabled || isLoading}
           >

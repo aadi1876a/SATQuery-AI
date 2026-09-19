@@ -107,7 +107,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelected, selectedImag
       <UploadCloud size={48} className="upload-icon" />
       <h3>Drop satellite imagery here</h3>
       <p>Supports TIFF, PNG, JPEG (Optical & SAR)</p>
-      <button className="btn btn-primary">Browse Files</button>
+      <button className="btn btn-primary" onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}>Browse Files</button>
     </div>
   );
 };

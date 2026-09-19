@@ -37,6 +37,26 @@
   flex-shrink: 0;
 }
 
+.hud-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-panel);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+.hud-back-btn:hover {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: var(--accent-teal-dim);
+}
+
 .hud-logo-wrap {
   position: relative;
   width: 36px;
@@ -227,4 +247,38 @@
 @media (max-width: 768px) {
   .hud-clock { display: none; }
   .hud-subtitle { display: none; }
+}
+
+/* Demo toggle in header */
+.hud-demo-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 2px;
+  border: 1px solid var(--border-panel);
+  background: rgba(14, 21, 28, 0.8);
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.hud-demo-toggle input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  accent-color: var(--accent-amber);
+}
+.hud-demo-toggle.active {
+  border-color: rgba(232, 168, 87, 0.5);
+  color: var(--accent-amber);
+  background: rgba(232, 168, 87, 0.08);
+}
+.hud-demo-toggle:hover {
+  border-color: rgba(232, 168, 87, 0.3);
+  color: var(--text-muted);
 }

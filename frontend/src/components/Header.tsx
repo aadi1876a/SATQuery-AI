@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '../api/client';
-import { Satellite, Radio, Clock, Globe } from 'lucide-react';
+import { Satellite, Radio, Clock, Globe, ArrowLeft, FlaskConical } from 'lucide-react';
 import './Header.css';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isDemoMode?: boolean;
+  onDemoModeChange?: (value: boolean) => void;
+  onBackToLanding?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ isDemoMode, onDemoModeChange, onBackToLanding }) => {
   const [status, setStatus] = useState<'connected' | 'disconnected' | 'processing'>('processing');
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
@@ -49,6 +55,11 @@ const Header: React.FC = () => {
     <header className="hud-header">
       {/* Left: branding */}
       <div className="hud-brand">
+        {onBackToLanding && (
+          <button className="hud-back-btn" onClick={onBackToLanding} title="Back to Home">
+            <ArrowLeft size={16} />
+          </button>
+        )}
         <div className="hud-logo-wrap">
           <Satellite size={22} className="hud-logo-icon" />
           <div className="hud-logo-ring" />
@@ -102,6 +113,24 @@ const Header: React.FC = () => {
           </div>
           <span className={`status-dot ${status}`} />
         </div>
+
+        {/* Demo mode toggle (in analysis mode) */}
+        {onDemoModeChange && (
+          <label
+            className={`hud-demo-toggle ${isDemoMode ? 'active' : ''}`}
+            htmlFor="demo-mode-toggle-header"
+            title="Enable demo mode to simulate AI responses"
+          >
+            <FlaskConical size={11} />
+            <input
+              type="checkbox"
+              id="demo-mode-toggle-header"
+              checked={isDemoMode}
+              onChange={e => onDemoModeChange(e.target.checked)}
+            />
+            DEMO
+          </label>
+        )}
 
         {/* Coordinates badge */}
         <div className="hud-coords">
