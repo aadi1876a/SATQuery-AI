@@ -6,3 +6,5 @@ pytest>=7.0
 torch>=2.0
 torchvision>=0.15
 transformers>=4.30
+fastapi>=0.100
+uvicorn>=0.20

@@ -1,0 +1,192 @@
+{
+  "status": "success",
+  "text_answer": "Temporal analysis for query 'What type of land cover change occurred?' between 2020-01-01 and 2021-01-01 indicates significant Burn Scar / Dark Surface Inundation. A total area footprint change of approx 41.58% was observed across 16 localized zone(s).",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/vqa_real_test/change_mask_1789790190.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        0.558,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7857,
+        0.5759,
+        0.9866,
+        0.875
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7723,
+        0.4286,
+        0.9866,
+        0.5536
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.3482,
+        0.0,
+        0.5,
+        0.1339
+      ],
+      "mask_path": null,
+      "label": "Change Region #4"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.558,
+        0.5402,
+        0.6295,
+        0.7411
+      ],
+      "mask_path": null,
+      "label": "Change Region #5"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.5312,
+        0.2098,
+        0.5982,
+        0.3527
+      ],
+      "mask_path": null,
+      "label": "Change Region #6"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.317,
+        0.9598,
+        0.5938,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #7"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.5402,
+        0.3839,
+        0.6116,
+        0.5179
+      ],
+      "mask_path": null,
+      "label": "Change Region #8"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.5893,
+        0.75,
+        0.6429,
+        0.8884
+      ],
+      "mask_path": null,
+      "label": "Change Region #9"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.8661,
+        0.0,
+        0.9866,
+        0.058
+      ],
+      "mask_path": null,
+      "label": "Change Region #10"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7545,
+        0.2589,
+        0.8214,
+        0.3616
+      ],
+      "mask_path": null,
+      "label": "Change Region #11"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.5268,
+        0.0982,
+        0.5893,
+        0.183
+      ],
+      "mask_path": null,
+      "label": "Change Region #12"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7411,
+        0.0982,
+        0.8348,
+        0.1875
+      ],
+      "mask_path": null,
+      "label": "Change Region #13"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7054,
+        0.0,
+        0.7634,
+        0.0714
+      ],
+      "mask_path": null,
+      "label": "Change Region #14"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7857,
+        0.0,
+        0.8527,
+        0.0893
+      ],
+      "mask_path": null,
+      "label": "Change Region #15"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.5134,
+        0.0491,
+        0.6295,
+        0.0848
+      ],
+      "mask_path": null,
+      "label": "Change Region #16"
+    }
+  ],
+  "confidence": 0.834,
+  "raw_output_path": "outputs/vqa_real_test/change_overlay_1789790190.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + Temporal VQA)",
+  "error_message": null
+}

@@ -1,0 +1,38 @@
+{
+  "status": "success",
+  "text_answer": "A total of 2 distinct changed region(s) were identified between 2021-06-01 and 2023-06-01. Detailed breakdown of detected modifications: Region #1 (South-West quadrant): Water Inundation / Flooding; Region #2 (North-East quadrant): Land Clearing / Soil Excavation.",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/change_mask_1789755105.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.625,
+        0.15,
+        0.9025,
+        0.4525
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.15,
+        0.625,
+        0.4275,
+        0.9025
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    }
+  ],
+  "confidence": 0.943,
+  "raw_output_path": "outputs/change_overlay_1789755105.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA) (rule-based fallback)",
+  "error_message": null
+}
