@@ -1,0 +1,82 @@
+{
+  "status": "success",
+  "text_answer": "Bi-Temporal Land Cover Report (2022 -> 2025):\n• Query Intent: 'Detect all building, land cover, greenery, and water level changes between t11 and t12.'\n• Total Changed Footprint: ~50.78% of scene area across 6 zone(s)\n\nObserved Modifications:\n• Zone #1 (South-East quadrant): New Building / Concrete Structure\n• Zone #2 (South-West quadrant): New Building / Concrete Structure\n• Zone #3 (South-West quadrant): New Building / Concrete Structure\n• Zone #4 (North-West quadrant): New Building / Concrete Structure\n• Zone #5 (North-East quadrant): Water Inundation / Flooding\n• Zone #6 (Center of the scene): Structural & Land Surface Modification",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "output\\change_mask_1789799670.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.933,
+        0.9375,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7545,
+        0.0,
+        0.8884,
+        0.1071
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.6027,
+        0.1205,
+        0.7277,
+        0.2768
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.1339,
+        0.0,
+        0.5714,
+        0.3616
+      ],
+      "mask_path": null,
+      "label": "Change Region #4"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.7455,
+        0.2098,
+        0.9152
+      ],
+      "mask_path": null,
+      "label": "Change Region #5"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0045,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #6"
+    }
+  ],
+  "confidence": 0.905,
+  "raw_output_path": "output\\change_overlay_1789799670.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)",
+  "error_message": null
+}

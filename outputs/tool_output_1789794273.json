@@ -1,0 +1,38 @@
+{
+  "status": "success",
+  "text_answer": "Bi-Temporal VQA Summary (2021-06-01 -> 2023-06-01) for query 'What changed?':\n• Scene Change Footprint: ~14.7% of total image area\n• Total Change Clusters: 2 primary region(s)\n\nObserved Changes:\n• Region #1 (South-West quadrant): Water Inundation / Flooding\n• Region #2 (North-East quadrant): Vegetation Loss / Deforestation",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs\\change_mask_1789794273.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.6225,
+        0.1475,
+        0.905,
+        0.455
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.1475,
+        0.6225,
+        0.43,
+        0.905
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    }
+  ],
+  "confidence": 0.97,
+  "raw_output_path": "outputs\\change_overlay_1789794273.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)",
+  "error_message": null
+}
