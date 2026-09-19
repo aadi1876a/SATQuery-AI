@@ -5,7 +5,7 @@ EVERY teammate imports models from this file - never redefine these shapes elsew
 """
 
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Dict, Any
 from enum import Enum
 
 
@@ -53,7 +53,7 @@ class ToolInput(BaseModel):
     task: TaskType
     query: str
     images: List[ImageObject]
-    params: dict = Field(default_factory=dict)
+    params: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -95,7 +95,7 @@ class ExecutionTrace(BaseModel):
     task_detected: str
     input_validation: InputValidation
     tools_selected: List[str] = Field(default_factory=list)
-    parameters_used: dict = Field(default_factory=dict)
+    parameters_used: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------

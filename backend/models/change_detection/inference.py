@@ -16,7 +16,7 @@ if _repo_root not in sys.path:
 from schemas import ToolInput, ToolOutput
 from .change_engine import P3ChangeDetectionEngine
 
-_engine = P3ChangeDetectionEngine()
+_engine = P3ChangeDetectionEngine(output_dir="outputs/p3")
 
 
 def call_change_model(tool_input: ToolInput) -> ToolOutput:

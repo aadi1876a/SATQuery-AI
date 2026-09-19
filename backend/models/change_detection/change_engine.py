@@ -134,7 +134,8 @@ class P3ChangeDetectionEngine:
         """
         Exports a ToolOutput object to a 100% schema-compliant Pydantic JSON file.
         """
-        file_path = os.path.join(self.output_dir, filename)
+        run_dir = os.path.dirname(tool_output.raw_output_path) if tool_output.raw_output_path else self.output_dir
+        file_path = os.path.join(run_dir, filename)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(tool_output.model_dump_json(indent=2))
         return file_path
@@ -172,10 +173,12 @@ class P3ChangeDetectionEngine:
         """
         evidence_list: List[SpatialEvidence] = []
         timestamp = int(time.time())
-
+        run_dir = os.path.join(self.output_dir, f"run_{timestamp}")
+        os.makedirs(run_dir, exist_ok=True)
+        
         # Save Binary Mask
         mask_filename = f"change_mask_{timestamp}.png"
-        mask_filepath = os.path.join(self.output_dir, mask_filename)
+        mask_filepath = os.path.join(run_dir, mask_filename)
         mask_pil = Image.fromarray(change_mask)
         mask_pil.save(mask_filepath)
 
@@ -246,8 +249,10 @@ class P3ChangeDetectionEngine:
                 draw.text((x1 + 4, max(0, y1 - 18)), banner_text, fill=(255, 255, 255, 255))
 
         timestamp = int(time.time())
+        run_dir = os.path.join(self.output_dir, f"run_{timestamp}")
+        os.makedirs(run_dir, exist_ok=True)
         overlay_filename = f"change_overlay_{timestamp}.png"
-        overlay_filepath = os.path.join(self.output_dir, overlay_filename)
+        overlay_filepath = os.path.join(run_dir, overlay_filename)
 
         overlay.convert("RGB").save(overlay_filepath)
         return overlay_filepath

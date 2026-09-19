@@ -1,0 +1,38 @@
+{
+  "status": "success",
+  "query": "Where is the forest?",
+  "answer": "Located the requested region.",
+  "visual_evidence": [
+    {
+      "type": "bbox",
+      "coords": [
+        120.0,
+        340.0,
+        210.0,
+        400.0
+      ],
+      "mask_path": null,
+      "label": "water_body"
+    }
+  ],
+  "confidence": 0.85,
+  "execution_trace": {
+    "task_detected": "grounding",
+    "input_validation": {
+      "images_provided": 1,
+      "modalities": [
+        "optical"
+      ],
+      "co_registered": null,
+      "format": "PNG",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "mock_grounding_v0"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}

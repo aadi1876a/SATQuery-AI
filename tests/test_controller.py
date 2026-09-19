@@ -12,13 +12,24 @@ from schemas import ImageObject
 from agent.controller import run_query
 
 
+import glob
+
+REAL_IMAGES = glob.glob("data/bigearthnet_subset/images/*.png")
+
 def make_image(image_id="img1", modality="optical"):
+    # Fallback to a static image path if no images exist (shouldn't happen here)
+    real_path = REAL_IMAGES[0] if REAL_IMAGES else "/data/img1.tif"
+    
+    # If the test requests a second image, pick the second one in the array
+    if image_id == "b" and len(REAL_IMAGES) > 1:
+        real_path = REAL_IMAGES[1]
+        
     return ImageObject(
         image_id=image_id,
-        file_path=f"/data/{image_id}.tif",
+        file_path=real_path,
         modality=modality,
-        format="GeoTIFF",
-        bands=4,
+        format="PNG",
+        bands=3,
         resolution_m=10,
         crs="EPSG:32643",
         bbox=[72.81, 21.15, 72.84, 21.18],

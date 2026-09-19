@@ -1,0 +1,58 @@
+{
+  "image_id": "optical_scene_eval",
+  "modality": "Modality.optical",
+  "detections": [
+    {
+      "detection_id": 1,
+      "label": "satellite buildings",
+      "score": 0.052,
+      "pixel_coords": {
+        "x1": 7.38,
+        "y1": 5.29,
+        "x2": 512.0,
+        "y2": 510.74
+      },
+      "coordinate_system": "image_pixels",
+      "note": "These are pixel coordinates, not geographic lat/lon."
+    },
+    {
+      "detection_id": 2,
+      "label": "satellite buildings",
+      "score": 0.0193,
+      "pixel_coords": {
+        "x1": 126.68,
+        "y1": 71.77,
+        "x2": 313.41,
+        "y2": 149.7
+      },
+      "coordinate_system": "image_pixels",
+      "note": "These are pixel coordinates, not geographic lat/lon."
+    },
+    {
+      "detection_id": 3,
+      "label": "satellite buildings",
+      "score": 0.0153,
+      "pixel_coords": {
+        "x1": 4.11,
+        "y1": 6.0,
+        "x2": 510.01,
+        "y2": 413.78
+      },
+      "coordinate_system": "image_pixels",
+      "note": "These are pixel coordinates, not geographic lat/lon."
+    },
+    {
+      "detection_id": 4,
+      "label": "satellite buildings",
+      "score": 0.0149,
+      "pixel_coords": {
+        "x1": 137.11,
+        "y1": 340.14,
+        "x2": 331.2,
+        "y2": 420.6
+      },
+      "coordinate_system": "image_pixels",
+      "note": "These are pixel coordinates, not geographic lat/lon."
+    }
+  ]
+}

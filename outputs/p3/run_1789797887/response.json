@@ -1,0 +1,78 @@
+{
+  "status": "success",
+  "query": "What changed between these two dates?",
+  "answer": "Bi-temporal VQA report (T1 -> T2) for query 'What changed between these two dates?': Identified 4 primary change region(s) spanning ~48.95% of the analyzed scene. Observed changes: Region #1 (South-Central quadrant): T1 showed: a field of grass. T2 showed: the location of the area where the two bodies of water are located.; Region #2 (North-West quadrant): T1 showed: the earth ' s surface. T2 showed: the earth ' s surface.; Region #3 (North-East quadrant): T1 showed: the location of the satellite. T2 showed: the bright green hue of the sky.; Region #4 (North-West quadrant): T1 showed: the sun shining through the clouds. T2 showed: the earth ' s surface..",
+  "visual_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/change_mask_1789797887.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.2455,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.1786,
+        0.0982,
+        0.3125,
+        0.2054
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.7009,
+        0.2366,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        0.1652,
+        0.1562
+      ],
+      "mask_path": null,
+      "label": "Change Region #4"
+    }
+  ],
+  "confidence": 0.804,
+  "execution_trace": {
+    "task_detected": "change_vqa",
+    "input_validation": {
+      "images_provided": 2,
+      "modalities": [
+        "optical",
+        "optical"
+      ],
+      "co_registered": true,
+      "format": "PNG",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}

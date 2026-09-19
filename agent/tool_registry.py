@@ -5,11 +5,14 @@ Swap mock_tools imports for real_tools imports as teammates finish their models 
 no other code needs to change because everyone returns the same ToolOutput shape.
 """
 
-from agent.tools.mock_tools import (
+from backend.models.vqa_captioning_grounding.inference import (
     call_vqa_model,
     call_caption_model,
+)
+from backend.models.change_detection.inference import call_change_model
+
+from agent.tools.mock_tools import (
     call_grounding_model,
-    call_change_model,
     call_fusion_model,
 )
 

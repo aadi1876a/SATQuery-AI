@@ -1,0 +1,19 @@
+{
+  "image_id": "sar_scene_eval",
+  "modality": "Modality.sar",
+  "detections": [
+    {
+      "detection_id": 1,
+      "label": "aerial view of structures",
+      "score": 0.0312,
+      "pixel_coords": {
+        "x1": 5.39,
+        "y1": 3.44,
+        "x2": 511.59,
+        "y2": 509.13
+      },
+      "coordinate_system": "image_pixels",
+      "note": "These are pixel coordinates, not geographic lat/lon."
+    }
+  ]
+}

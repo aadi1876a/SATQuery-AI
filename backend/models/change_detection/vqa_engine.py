@@ -62,7 +62,7 @@ def _generate_vlm_caption_pair(crop1: Image.Image, crop2: Image.Image, prompt_pr
 
     cap1 = caption_single(crop1)
     cap2 = caption_single(crop2)
-    return f"T1 showed: {cap1}. T2 showed: {cap2}."
+    return f"Changed from {cap1} to {cap2}"
 
 
 class TemporalVQAEngine:

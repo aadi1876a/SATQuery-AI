@@ -1,0 +1,122 @@
+{
+  "status": "success",
+  "query": "What changed between these two dates?",
+  "answer": "Bi-temporal VQA report (T1 -> T2) for query 'What changed between these two dates?': Identified 8 primary change region(s) spanning ~40.08% of the analyzed scene. Observed changes: Region #1 (South-West quadrant): T1 showed: the earth ' s surface. T2 showed: the earth ' s surface.; Region #2 (South-East quadrant): T1 showed: the location of the first stage of the flight. T2 showed: the location of the satellite.; Region #3 (South-West quadrant): T1 showed: the earth ' s surface. T2 showed: the earth ' s surface.; Region #4 (Central-West quadrant): T1 showed: the earth ' s surface. T2 showed: the earth ' s surface.; Region #5 (Central-East quadrant): T1 showed: the view of the earth. T2 showed: a baseball field.; Region #6 (North-East quadrant): T1 showed: the earth ' s surface. T2 showed: the location of the moon.; Region #7 (North-East quadrant): T1 showed: the location of the moon. T2 showed: the location of the satellite.; Region #8 (Central-West quadrant): T1 showed: the area where the area is located. T2 showed: a green leaf..",
+  "visual_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/change_mask_1789798726.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.8661,
+        0.317,
+        1.0,
+        0.3795
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7321,
+        0.4152,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.7277,
+        0.3839,
+        0.8304,
+        0.5
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.4643,
+        0.0,
+        0.5938,
+        0.0893
+      ],
+      "mask_path": null,
+      "label": "Change Region #4"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.4152,
+        0.7143,
+        0.6607,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #5"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.2946,
+        0.7009,
+        0.4821,
+        0.8214
+      ],
+      "mask_path": null,
+      "label": "Change Region #6"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0759,
+        0.7589,
+        0.2812,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #7"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        1.0,
+        0.5982
+      ],
+      "mask_path": null,
+      "label": "Change Region #8"
+    }
+  ],
+  "confidence": 0.84,
+  "execution_trace": {
+    "task_detected": "change_vqa",
+    "input_validation": {
+      "images_provided": 2,
+      "modalities": [
+        "optical",
+        "optical"
+      ],
+      "co_registered": true,
+      "format": "PNG",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}
