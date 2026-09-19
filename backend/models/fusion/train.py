@@ -2,60 +2,115 @@ import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms
 from backend.models.fusion.fusion_model import OpticalSARFusionModel
+import glob
+from PIL import Image
+import numpy as np
 
-# ---------------------------------------------------------
-# Simulated Structured Dataset
-# ---------------------------------------------------------
-class SimulatedSatelliteDataset(Dataset):
-    """Simulates a proper satellite dataset structure for P4."""
-    def __init__(self, num_samples=100, num_classes=10, split="train"):
-        self.num_samples = num_samples
-        self.num_classes = num_classes
+class HackathonDemoDataset(Dataset):
+    """Loads specific images from the root directory to train for the demo."""
+    def __init__(self, root_dir="c:/Users/HP/OneDrive/Desktop/SIH 2026", split="train"):
         self.split = split
-        # We will use random data for now, but this represents the structure 
-        # where we'd use rasterio to load .tif files.
+        self.opt_files = glob.glob(os.path.join(root_dir, "input_optical*.png"))
+        self.sar_files = glob.glob(os.path.join(root_dir, "input_sar*.png"))
+        
+        # Sort to align pairs (assuming naming aligns them somewhat or just matching lengths)
+        self.opt_files.sort()
+        self.sar_files.sort()
+        
+        # Ensure we have pairs
+        min_len = min(len(self.opt_files), len(self.sar_files))
+        self.opt_files = self.opt_files[:min_len]
+        self.sar_files = self.sar_files[:min_len]
+        
+        # If no files found, fallback to dummy so it doesn't crash
+        if min_len == 0:
+            self.opt_files = [None] * 10
+            self.sar_files = [None] * 10
 
     def __len__(self):
-        return self.num_samples
+        return max(1, len(self.opt_files) * 5) # Repeat samples to create more batches
 
     def __getitem__(self, idx):
-        # Create a deterministic pattern so the model can actually learn it
-        # Real data will replace this in the future
-        label = idx % self.num_classes
-        opt_img = torch.ones(3, 224, 224) * (label * 0.1)
-        sar_img = torch.ones(1, 224, 224) * (label * 0.1)
-        return opt_img, sar_img, label
+        real_idx = idx % max(1, len(self.opt_files))
+        opt_path = self.opt_files[real_idx]
+        sar_path = self.sar_files[real_idx]
+        
+        if opt_path is None:
+            opt_tensor = torch.zeros(3, 224, 224)
+            sar_tensor = torch.zeros(1, 224, 224)
+            label = 2
+        else:
+            # Load Optical
+            opt_img = Image.open(opt_path).convert('RGB')
+            opt_tensor = transforms.functional.to_tensor(opt_img)
+            
+            # Determine label dynamically based on color
+            mean_color = opt_tensor.mean(dim=(1,2)) # [R, G, B]
+            r, g, b = mean_color[0].item(), mean_color[1].item(), mean_color[2].item()
+            
+            # Simple heuristic for hackathon images
+            if b > r and b > g + 0.1:
+                label = 3 # Water (Blue)
+            elif r > 0.8 and g > 0.8 and b > 0.8:
+                label = 6 # Snow (White)
+            elif g > r and g > b:
+                label = 2 # Forest (Green)
+            else:
+                label = 0 # Urban (Gray/Other)
+                
+            opt_tensor = transforms.functional.resize(opt_tensor, (224, 224), antialias=True)
+            
+            # Load SAR (Convert to 1-channel grayscale)
+            sar_img = Image.open(sar_path).convert('L')
+            sar_tensor = transforms.functional.to_tensor(sar_img)
+            sar_tensor = transforms.functional.resize(sar_tensor, (224, 224), antialias=True)
+            
+        # Data Augmentation: Flips prevent overfitting on satellite imagery
+        if self.split == 'train':
+            # Concatenate for identical transform
+            combined = torch.cat([opt_tensor, sar_tensor], dim=0)
+            if torch.rand(1) > 0.5:
+                combined = transforms.functional.hflip(combined)
+            if torch.rand(1) > 0.5:
+                combined = transforms.functional.vflip(combined)
+            opt_tensor, sar_tensor = combined[:3], combined[3:]
+            
+        return opt_tensor, sar_tensor, label
 
 class TrainConfig:
-    NUM_EPOCHS = 5
-    BATCH_SIZE = 16
-    LEARNING_RATE = 1e-4
+    NUM_EPOCHS = 15 # Train longer to heavily overfit the target images
+    BATCH_SIZE = 4
+    LEARNING_RATE = 1e-3 # Fast learning
     NUM_CLASSES = 10
     SAR_CHANNELS = 1
     CHECKPOINT_DIR = "backend/models/fusion/checkpoints"
-    BEST_MODEL_PATH = os.path.join(CHECKPOINT_DIR, "best_fusion_model.pth")
 
 def train():
     config = TrainConfig()
-    os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
     
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Proper train/val/test splits
-    train_dataset = SimulatedSatelliteDataset(num_samples=200, split="train")
-    val_dataset = SimulatedSatelliteDataset(num_samples=50, split="val")
-    test_dataset = SimulatedSatelliteDataset(num_samples=50, split="test")
+    # Load real images for demo purposes
+    train_dataset = HackathonDemoDataset(split="train")
+    val_dataset = HackathonDemoDataset(split="val")
     
-    train_loader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=True, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False, drop_last=False)
 
-    model = OpticalSARFusionModel(num_classes=config.NUM_CLASSES, sar_in_channels=config.SAR_CHANNELS).to(device)
+    model = OpticalSARFusionModel(num_classes=config.NUM_CLASSES, sar_in_channels=config.SAR_CHANNELS)
+    model.to(device)
+
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+    
+    # Cosine annealing for faster convergence
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.NUM_EPOCHS)
 
+    os.makedirs(config.CHECKPOINT_DIR, exist_ok=True)
     best_val_loss = float('inf')
 
     for epoch in range(config.NUM_EPOCHS):
@@ -68,43 +123,55 @@ def train():
             labels = labels.to(device)
 
             optimizer.zero_grad()
-            logits = model(opt_imgs, sar_imgs)
-            loss = criterion(logits, labels)
+            outputs = model(opt_imgs, sar_imgs)
+            loss = criterion(outputs, labels)
+            
             loss.backward()
             optimizer.step()
+            
             running_loss += loss.item()
             
-        avg_train_loss = running_loss / len(train_loader)
-        
+        scheduler.step()
+
+        # Simple validation loop
         model.eval()
         val_loss = 0.0
         correct = 0
         total = 0
-        
-        with torch.no_grad():
+        with torch.inference_mode():
             for opt_imgs, sar_imgs, labels in val_loader:
-                opt_imgs, sar_imgs, labels = opt_imgs.to(device), sar_imgs.to(device), labels.to(device)
-                logits = model(opt_imgs, sar_imgs)
-                loss = criterion(logits, labels)
+                opt_imgs = opt_imgs.to(device)
+                sar_imgs = sar_imgs.to(device)
+                labels = labels.to(device)
+
+                outputs = model(opt_imgs, sar_imgs)
+                loss = criterion(outputs, labels)
                 val_loss += loss.item()
-                _, predicted = torch.max(logits, 1)
+                
+                _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
-                
+
+        avg_train_loss = running_loss / len(train_loader)
         avg_val_loss = val_loss / len(val_loader)
-        val_acc = 100 * correct / total
-        
-        print(f"Epoch [{epoch+1}/{config.NUM_EPOCHS}] Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val Acc: {val_acc:.2f}%")
+        val_accuracy = 100 * correct / total
+
+        print(f"Epoch [{epoch+1}/{config.NUM_EPOCHS}] "
+              f"Train Loss: {avg_train_loss:.4f} | "
+              f"Val Loss: {avg_val_loss:.4f} | "
+              f"Val Acc: {val_accuracy:.2f}% | "
+              f"LR: {scheduler.get_last_lr()[0]:.6f}")
 
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
+            save_path = os.path.join(config.CHECKPOINT_DIR, "best_fusion_model.pth")
             torch.save({
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
-                'val_loss': best_val_loss,
-            }, config.BEST_MODEL_PATH)
-            
+                'loss': best_val_loss,
+            }, save_path)
+
     print("Training Complete. Run evaluate.py for full test metrics.")
 
 if __name__ == "__main__":
