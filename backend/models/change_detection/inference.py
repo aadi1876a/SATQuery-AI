@@ -14,7 +14,7 @@ if _repo_root not in sys.path:
     sys.path.insert(0, _repo_root)
 
 from typing import Union, Dict, Any
-from schemas import ToolInput, ToolOutput
+from backend.app.schemas.schemas import ToolInput, ToolOutput
 from .change_engine import P3ChangeDetectionEngine
 
 _engine = P3ChangeDetectionEngine(output_dir="outputs/p3")

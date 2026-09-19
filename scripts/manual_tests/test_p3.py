@@ -6,7 +6,7 @@ end-to-end against SatQuery AI schemas.
 
 import os
 from PIL import Image, ImageDraw
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 

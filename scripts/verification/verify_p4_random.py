@@ -15,7 +15,7 @@ import rasterio
 import numpy as np
 from PIL import Image
 from backend.app.validators.input_validator import extract_metadata
-from schemas import Modality
+from backend.app.schemas.schemas import Modality
 
 def save_as_png(tif_path: str, png_path: str, is_sar: bool = False):
     with rasterio.open(tif_path) as src:

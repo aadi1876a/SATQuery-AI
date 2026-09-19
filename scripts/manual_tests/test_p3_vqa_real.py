@@ -1,7 +1,7 @@
 import os
 import json
 from PIL import Image
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 def test_vqa_query(engine: P3ChangeDetectionEngine, img1: ImageObject, img2: ImageObject, query: str, query_type_name: str):

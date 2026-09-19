@@ -24,7 +24,7 @@ sih26_dir = os.path.abspath("sih26")
 if sih26_dir not in sys.path:
     sys.path.insert(0, sih26_dir)
 
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from backend.models.change_detection.inference import call_change_model
 
 img_t1 = ImageObject(

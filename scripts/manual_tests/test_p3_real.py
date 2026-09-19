@@ -1,7 +1,7 @@
 import os
 import json
 from PIL import Image
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 def run_test_on_preprocessed_data():

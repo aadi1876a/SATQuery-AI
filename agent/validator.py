@@ -4,7 +4,7 @@ Checks whether the uploaded image(s) actually support the requested task,
 before any model is called. Returns an InputValidation object every time.
 """
 
-from schemas import ImageObject, TaskType, InputValidation
+from backend.app.schemas.schemas import ImageObject, TaskType, InputValidation
 
 # how many images each task requires
 REQUIRED_IMAGES = {

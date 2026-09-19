@@ -43,7 +43,7 @@ for p in [_BACKEND_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from schemas import ToolInput, ToolOutput, SpatialEvidence, Modality
+from backend.app.schemas.schemas import ToolInput, ToolOutput, SpatialEvidence, Modality
 from .preprocessing import load_image_rgb
 from .postprocessing import save_mask, generate_overlay, save_bboxes_json, validate_mask
 from .utils import get_device, get_pytorch, get_cached, set_cached, safe_plural, ensure_dirs

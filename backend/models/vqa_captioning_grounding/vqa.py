@@ -24,7 +24,7 @@ for p in [_BACKEND_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from schemas import ToolInput, ToolOutput, Modality
+from backend.app.schemas.schemas import ToolInput, ToolOutput, Modality
 from .preprocessing import load_image_rgb
 from .utils import get_device, get_pytorch, get_cached, set_cached
 

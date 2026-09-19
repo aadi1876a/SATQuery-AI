@@ -31,7 +31,7 @@ for p in [_PROJECT_ROOT, _BACKEND_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from schemas import (
+from backend.app.schemas.schemas import (
     Modality,
     ImageObject,
     TaskType,

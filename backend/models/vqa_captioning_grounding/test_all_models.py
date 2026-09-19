@@ -42,7 +42,7 @@ for p in [_PROJECT_ROOT, _BACKEND_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from schemas import ImageObject, ToolInput, ToolOutput, TaskType, Modality
+from backend.app.schemas.schemas import ImageObject, ToolInput, ToolOutput, TaskType, Modality
 from backend.models.vqa_captioning_grounding.vqa import run_vqa
 from backend.models.vqa_captioning_grounding.captioning import run_captioning
 from backend.models.vqa_captioning_grounding.grounding import run_grounding

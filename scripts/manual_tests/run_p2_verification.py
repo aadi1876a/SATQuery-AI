@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from schemas import ImageObject, Modality
+from backend.app.schemas.schemas import ImageObject, Modality
 from agent.controller import run_query
 
 import argparse

@@ -8,7 +8,7 @@ import argparse
 import requests
 from pathlib import Path
 from PIL import Image, ImageDraw
-from schemas import ImageObject, Modality
+from backend.app.schemas.schemas import ImageObject, Modality
 from backend.app.validators.input_validator import extract_metadata
 
 # Get all images for random selection

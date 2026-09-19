@@ -6,7 +6,7 @@ Tests query intent parsing, spatial-spectral reasoning, and natural language
 answer generation across multiple query types (Counting, Location, Land Cover, Summary).
 """
 
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 from test_t3_t4 import create_satellite_t3_t4_images
 

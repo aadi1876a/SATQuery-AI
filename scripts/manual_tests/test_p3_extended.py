@@ -9,7 +9,7 @@ Testing across 3 realistic remote sensing scenarios:
 
 import os
 from PIL import Image, ImageDraw
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 

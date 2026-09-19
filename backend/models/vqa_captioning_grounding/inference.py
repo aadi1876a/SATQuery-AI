@@ -43,7 +43,7 @@ for path in [_PROJECT_ROOT, _BACKEND_DIR]:
     if path not in sys.path:
         sys.path.insert(0, path)
 
-from schemas import ImageObject, ToolInput, ToolOutput, SpatialEvidence, TaskType, Modality
+from backend.app.schemas.schemas import ImageObject, ToolInput, ToolOutput, SpatialEvidence, TaskType, Modality
 
 # ---------------------------------------------------------------------------
 # Import modular P2 components

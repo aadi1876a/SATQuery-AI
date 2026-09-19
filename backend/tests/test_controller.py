@@ -8,7 +8,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from schemas import ImageObject
+from backend.app.schemas.schemas import ImageObject
 from agent.controller import run_query
 
 

@@ -8,7 +8,7 @@ Swap these one at a time for the real functions in real_tools.py
 once each teammate's model is ready - the shape never changes.
 """
 
-from schemas import ToolInput, ToolOutput, SpatialEvidence
+from backend.app.schemas.schemas import ToolInput, ToolOutput, SpatialEvidence
 
 
 def call_vqa_model(tool_input: ToolInput) -> ToolOutput:

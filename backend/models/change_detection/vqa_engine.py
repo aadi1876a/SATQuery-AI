@@ -13,7 +13,7 @@ import numpy as np
 import cv2
 from PIL import Image
 from typing import List, Dict, Any, Tuple
-from schemas import SpatialEvidence, ImageObject
+from backend.app.schemas.schemas import SpatialEvidence, ImageObject
 
 # Module-level model cache (loads once, reuses across calls)
 _CACHED_MODELS: Dict[str, Any] = {}

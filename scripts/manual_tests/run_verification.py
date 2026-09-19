@@ -3,7 +3,7 @@ import time
 import json
 import shutil
 from PIL import Image
-from schemas import ToolInput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 def verify_pipeline():

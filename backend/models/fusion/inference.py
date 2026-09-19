@@ -4,7 +4,7 @@ from torchvision import transforms
 from PIL import Image
 
 # Import schemas (P5 / System dependency)
-from schemas import ToolInput, ToolOutput, SpatialEvidence, Modality
+from backend.app.schemas.schemas import ToolInput, ToolOutput, SpatialEvidence, Modality
 
 # Import our P4 model
 from backend.models.fusion.fusion_model import OpticalSARFusionModel

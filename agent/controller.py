@@ -4,7 +4,7 @@ The agentic core: classifies the query, validates inputs, calls the right tool(s
 and builds the execution trace. This is the piece that gets graded on "orchestration."
 """
 
-from schemas import (
+from backend.app.schemas.schemas import (
     ImageObject, ToolInput, QueryResponse, ExecutionTrace, TaskType
 )
 from agent.classifier import classify_intent

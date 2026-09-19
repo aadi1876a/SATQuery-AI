@@ -4,7 +4,7 @@ Rule-based intent classifier. Zero dependencies, works offline -
 this is your demo-safe fallback if the Gemini API is ever unavailable on stage.
 """
 
-from schemas import TaskType
+from backend.app.schemas.schemas import TaskType
 
 
 def classify_intent(query: str, num_images: int) -> TaskType:

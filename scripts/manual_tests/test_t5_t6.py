@@ -12,7 +12,7 @@ Validates complete P3 Specialist Model pipeline:
 
 import os
 from PIL import Image, ImageDraw
-from schemas import ToolInput, ToolOutput, ImageObject, TaskType, Modality
+from backend.app.schemas.schemas import ToolInput, ToolOutput, ImageObject, TaskType, Modality
 from p3_model import P3ChangeDetectionEngine
 
 

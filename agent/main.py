@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
 
-from schemas import ImageObject, QueryResponse
+from backend.app.schemas.schemas import ImageObject, QueryResponse
 from agent.controller import run_query
 
 app = FastAPI(title="SatQuery AI - Agent Service")
