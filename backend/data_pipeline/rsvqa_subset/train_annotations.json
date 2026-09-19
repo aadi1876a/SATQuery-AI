@@ -1,0 +1,1252 @@
+[
+  {
+    "image": "rsvqa_0000.png",
+    "question": "Is it a rural or an urban area",
+    "answer": "rural"
+  },
+  {
+    "image": "rsvqa_0001.png",
+    "question": "What is the number of commercial buildings?",
+    "answer": "5"
+  },
+  {
+    "image": "rsvqa_0002.png",
+    "question": "How many farmlands are there?",
+    "answer": "62"
+  },
+  {
+    "image": "rsvqa_0003.png",
+    "question": "What is the number of buildings?",
+    "answer": "104"
+  },
+  {
+    "image": "rsvqa_0004.png",
+    "question": "How many small buildings are there?",
+    "answer": "100"
+  },
+  {
+    "image": "rsvqa_0005.png",
+    "question": "Are there less farmlands than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0006.png",
+    "question": "What is the number of residential buildings next to a  farmland in the image?",
+    "answer": "98"
+  },
+  {
+    "image": "rsvqa_0007.png",
+    "question": "Is the number of commercial buildings equal to the number of grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0008.png",
+    "question": "Is there a circular water area?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0009.png",
+    "question": "Are there less forests than commercial buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0010.png",
+    "question": "Is the number of water areas equal to the number of large roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0011.png",
+    "question": "What is the amount of medium water areas?",
+    "answer": "4"
+  },
+  {
+    "image": "rsvqa_0012.png",
+    "question": "Is a large building present?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0013.png",
+    "question": "What is the number of water areas on the left of a  commercial building?",
+    "answer": "10"
+  },
+  {
+    "image": "rsvqa_0014.png",
+    "question": "Is a circular building present in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0015.png",
+    "question": "Are there more water areas than residential buildings in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0016.png",
+    "question": "Is the number of circular residential buildings equal to the number of commercial buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0017.png",
+    "question": "Is the number of buildings equal to the number of forests?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0018.png",
+    "question": "What is the amount of rectangular buildings in the image?",
+    "answer": "65"
+  },
+  {
+    "image": "rsvqa_0019.png",
+    "question": "What is the amount of medium farmlands?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0020.png",
+    "question": "What is the number of medium commercial buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0021.png",
+    "question": "Is there a water area?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0022.png",
+    "question": "Is there a rectangular road?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0023.png",
+    "question": "What is the amount of water areas?",
+    "answer": "23"
+  },
+  {
+    "image": "rsvqa_0024.png",
+    "question": "Are there less water areas than residential buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0025.png",
+    "question": "What is the amount of roads on the right of a  water area?",
+    "answer": "61"
+  },
+  {
+    "image": "rsvqa_0026.png",
+    "question": "What is the amount of medium water areas?",
+    "answer": "7"
+  },
+  {
+    "image": "rsvqa_0027.png",
+    "question": "Are there less residential buildings than forests?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0028.png",
+    "question": "How many circular residential buildings are there?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0029.png",
+    "question": "Are there less farmlands than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0030.png",
+    "question": "Are there more grass areas than water areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0031.png",
+    "question": "What is the amount of square water areas?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0032.png",
+    "question": "Are there less roads than residential buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0033.png",
+    "question": "Is there a forest?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0034.png",
+    "question": "Are there less buildings than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0035.png",
+    "question": "What is the number of roads on the right of a  commercial building?",
+    "answer": "20"
+  },
+  {
+    "image": "rsvqa_0036.png",
+    "question": "Is the number of residential buildings equal to the number of grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0037.png",
+    "question": "How many residential areas are there?",
+    "answer": "8"
+  },
+  {
+    "image": "rsvqa_0038.png",
+    "question": "How many medium grass areas are there?",
+    "answer": "23"
+  },
+  {
+    "image": "rsvqa_0039.png",
+    "question": "What is the number of square grass areas?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0040.png",
+    "question": "What is the number of small water areas in the image?",
+    "answer": "7"
+  },
+  {
+    "image": "rsvqa_0041.png",
+    "question": "Is it a rural or an urban area",
+    "answer": "rural"
+  },
+  {
+    "image": "rsvqa_0042.png",
+    "question": "Are there more water areas than commercial buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0043.png",
+    "question": "What is the amount of buildings?",
+    "answer": "174"
+  },
+  {
+    "image": "rsvqa_0044.png",
+    "question": "What is the number of commercial buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0045.png",
+    "question": "Is there a circular water area in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0046.png",
+    "question": "What is the amount of residential buildings in the image?",
+    "answer": "172"
+  },
+  {
+    "image": "rsvqa_0047.png",
+    "question": "Is the number of buildings equal to the number of farmlands?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0048.png",
+    "question": "Are there more roads than commercial buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0049.png",
+    "question": "Is a square road present in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0050.png",
+    "question": "Are there more circular buildings than square roads?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0051.png",
+    "question": "Are there less commercial buildings than roads?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0052.png",
+    "question": "Are there more square forests than residential buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0053.png",
+    "question": "Are there more grass areas than roads?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0054.png",
+    "question": "Is there a medium grass area?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0055.png",
+    "question": "What is the number of square residential buildings?",
+    "answer": "5"
+  },
+  {
+    "image": "rsvqa_0056.png",
+    "question": "Is the number of residential buildings equal to the number of roads in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0057.png",
+    "question": "Is the number of water areas equal to the number of roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0058.png",
+    "question": "Is the number of roads equal to the number of small grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0059.png",
+    "question": "Are there more roads than forests?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0060.png",
+    "question": "Are there less buildings than roads on the left of a  residential building?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0061.png",
+    "question": "Is there a forest?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0062.png",
+    "question": "How many residential buildings are there?",
+    "answer": "53"
+  },
+  {
+    "image": "rsvqa_0063.png",
+    "question": "Are there less residential buildings than forests?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0064.png",
+    "question": "Are there less buildings than buildings on the right of a  road?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0065.png",
+    "question": "What is the number of grass areas?",
+    "answer": "92"
+  },
+  {
+    "image": "rsvqa_0066.png",
+    "question": "Is the number of grass areas equal to the number of roads in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0067.png",
+    "question": "Is the number of residential buildings equal to the number of roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0068.png",
+    "question": "What is the number of rectangular roads?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0069.png",
+    "question": "Is the number of roads equal to the number of buildings in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0070.png",
+    "question": "Is a circular building present?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0071.png",
+    "question": "Are there more commercial buildings than grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0072.png",
+    "question": "How many square buildings are there?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0073.png",
+    "question": "What is the number of medium water areas?",
+    "answer": "5"
+  },
+  {
+    "image": "rsvqa_0074.png",
+    "question": "What is the amount of heaths?",
+    "answer": "9"
+  },
+  {
+    "image": "rsvqa_0075.png",
+    "question": "Are there more roads than commercial buildings in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0076.png",
+    "question": "How many small roads are there in the image?",
+    "answer": "38"
+  },
+  {
+    "image": "rsvqa_0077.png",
+    "question": "Is the number of small residential buildings equal to the number of roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0078.png",
+    "question": "What is the number of rectangular grass areas?",
+    "answer": "26"
+  },
+  {
+    "image": "rsvqa_0079.png",
+    "question": "What is the amount of square commercial buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0080.png",
+    "question": "What is the number of medium residential buildings?",
+    "answer": "5"
+  },
+  {
+    "image": "rsvqa_0081.png",
+    "question": "What is the amount of residential areas?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0082.png",
+    "question": "Is a building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0083.png",
+    "question": "Is a commercial building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0084.png",
+    "question": "Is a rectangular water area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0085.png",
+    "question": "Is there a forest?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0086.png",
+    "question": "How many commercial buildings are there?",
+    "answer": "6"
+  },
+  {
+    "image": "rsvqa_0087.png",
+    "question": "What is the number of medium water areas at the bottom of a  commercial building?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0088.png",
+    "question": "Is a road on the right of a  meadow present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0089.png",
+    "question": "Is there a rectangular farmland in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0090.png",
+    "question": "Are there more water areas than farmlands in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0091.png",
+    "question": "What is the amount of commercial buildings at the top of a  farmland?",
+    "answer": "6"
+  },
+  {
+    "image": "rsvqa_0092.png",
+    "question": "Is a square building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0093.png",
+    "question": "Are there less square buildings than water areas in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0094.png",
+    "question": "Is the number of residential buildings equal to the number of farmlands?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0095.png",
+    "question": "What is the amount of small water areas in the image?",
+    "answer": "7"
+  },
+  {
+    "image": "rsvqa_0096.png",
+    "question": "Are there more buildings than forests?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0097.png",
+    "question": "Are there more commercial buildings than roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0098.png",
+    "question": "Are there less roads than commercial buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0099.png",
+    "question": "What is the amount of buildings?",
+    "answer": "601"
+  },
+  {
+    "image": "rsvqa_0100.png",
+    "question": "Is there a residential building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0101.png",
+    "question": "What is the amount of roads?",
+    "answer": "191"
+  },
+  {
+    "image": "rsvqa_0102.png",
+    "question": "Is a commercial building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0103.png",
+    "question": "How many water areas are there?",
+    "answer": "80"
+  },
+  {
+    "image": "rsvqa_0104.png",
+    "question": "What is the number of farmlands in the image?",
+    "answer": "31"
+  },
+  {
+    "image": "rsvqa_0105.png",
+    "question": "Are there more water areas than grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0106.png",
+    "question": "Is the number of water areas equal to the number of buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0107.png",
+    "question": "Is there a large building?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0108.png",
+    "question": "Is a circular residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0109.png",
+    "question": "How many small buildings are there?",
+    "answer": "593"
+  },
+  {
+    "image": "rsvqa_0110.png",
+    "question": "Is a medium residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0111.png",
+    "question": "Is the number of buildings equal to the number of scrubs?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0112.png",
+    "question": "Is there a small road?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0113.png",
+    "question": "Are there less water areas than grass areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0114.png",
+    "question": "What is the number of large buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0115.png",
+    "question": "Is there a square building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0116.png",
+    "question": "What is the number of square residential buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0117.png",
+    "question": "Is there a rectangular building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0118.png",
+    "question": "Is the number of commercial buildings equal to the number of forests?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0119.png",
+    "question": "What is the amount of circular buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0120.png",
+    "question": "What is the number of medium residential buildings?",
+    "answer": "4"
+  },
+  {
+    "image": "rsvqa_0121.png",
+    "question": "Are there more scrubs than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0122.png",
+    "question": "Is there a building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0123.png",
+    "question": "What is the number of water areas?",
+    "answer": "17"
+  },
+  {
+    "image": "rsvqa_0124.png",
+    "question": "Is a grass area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0125.png",
+    "question": "Are there less grass areas than buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0126.png",
+    "question": "Are there more roads than water areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0127.png",
+    "question": "Are there more small grass areas than roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0128.png",
+    "question": "Is the number of commercial buildings equal to the number of water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0129.png",
+    "question": "What is the amount of square commercial buildings in the image?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0130.png",
+    "question": "What is the number of rectangular grass areas?",
+    "answer": "97"
+  },
+  {
+    "image": "rsvqa_0131.png",
+    "question": "Are there less grass areas than commercial buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0132.png",
+    "question": "Is a square residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0133.png",
+    "question": "Are there more buildings than grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0134.png",
+    "question": "Are there more roads than commercial buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0135.png",
+    "question": "Is there a forest in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0136.png",
+    "question": "Is the number of commercial buildings equal to the number of grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0137.png",
+    "question": "What is the amount of circular buildings on the right of a  road?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0138.png",
+    "question": "What is the number of grass areas?",
+    "answer": "171"
+  },
+  {
+    "image": "rsvqa_0139.png",
+    "question": "What is the amount of water areas?",
+    "answer": "20"
+  },
+  {
+    "image": "rsvqa_0140.png",
+    "question": "Are there less water areas than forests?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0141.png",
+    "question": "Is a square residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0142.png",
+    "question": "How many medium commercial buildings are there?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0143.png",
+    "question": "Are there less commercial buildings than grass areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0144.png",
+    "question": "What is the amount of square heaths?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0145.png",
+    "question": "Is there a rectangular residential building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0146.png",
+    "question": "Is a circular water area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0147.png",
+    "question": "Is there a small road?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0148.png",
+    "question": "Are there less heaths than buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0149.png",
+    "question": "Are there more commercial buildings than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0150.png",
+    "question": "Is the number of grass areas equal to the number of medium residential buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0151.png",
+    "question": "Is the number of water areas equal to the number of commercial buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0152.png",
+    "question": "What is the amount of heaths in the image?",
+    "answer": "12"
+  },
+  {
+    "image": "rsvqa_0153.png",
+    "question": "How many circular residential buildings are there?",
+    "answer": "2"
+  },
+  {
+    "image": "rsvqa_0154.png",
+    "question": "Is there a farmland?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0155.png",
+    "question": "Are there more buildings than forests?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0156.png",
+    "question": "Is a square water area present in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0157.png",
+    "question": "What is the number of large residential buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0158.png",
+    "question": "Is the number of residential buildings equal to the number of forests in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0159.png",
+    "question": "What is the amount of small commercial buildings?",
+    "answer": "60"
+  },
+  {
+    "image": "rsvqa_0160.png",
+    "question": "Is the number of water areas equal to the number of medium grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0161.png",
+    "question": "What is the number of farmlands?",
+    "answer": "18"
+  },
+  {
+    "image": "rsvqa_0162.png",
+    "question": "What is the number of small roads?",
+    "answer": "626"
+  },
+  {
+    "image": "rsvqa_0163.png",
+    "question": "Are there less commercial buildings than roads in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0164.png",
+    "question": "How many commercial buildings on the left of a  road are there?",
+    "answer": "68"
+  },
+  {
+    "image": "rsvqa_0165.png",
+    "question": "Are there more residential buildings than small grass areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0166.png",
+    "question": "Are there more roads than residential buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0167.png",
+    "question": "Are there less circular residential buildings than roads?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0168.png",
+    "question": "Is a large building present?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0169.png",
+    "question": "How many commercial buildings are there?",
+    "answer": "538"
+  },
+  {
+    "image": "rsvqa_0170.png",
+    "question": "How many circular commercial buildings are there?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0171.png",
+    "question": "Are there less residential buildings than small roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0172.png",
+    "question": "What is the amount of rectangular forests?",
+    "answer": "9"
+  },
+  {
+    "image": "rsvqa_0173.png",
+    "question": "Is a water area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0174.png",
+    "question": "How many residential buildings are there?",
+    "answer": "15266"
+  },
+  {
+    "image": "rsvqa_0175.png",
+    "question": "What is the amount of parks?",
+    "answer": "5"
+  },
+  {
+    "image": "rsvqa_0176.png",
+    "question": "Is there a small water area in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0177.png",
+    "question": "How many farmlands are there?",
+    "answer": "3"
+  },
+  {
+    "image": "rsvqa_0178.png",
+    "question": "What is the number of small water areas?",
+    "answer": "283"
+  },
+  {
+    "image": "rsvqa_0179.png",
+    "question": "Is there a meadow?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0180.png",
+    "question": "Is there a large commercial building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0181.png",
+    "question": "How many rectangular residential buildings are there?",
+    "answer": "10837"
+  },
+  {
+    "image": "rsvqa_0182.png",
+    "question": "How many circular buildings are there?",
+    "answer": "51"
+  },
+  {
+    "image": "rsvqa_0183.png",
+    "question": "Are there more water areas than large residential buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0184.png",
+    "question": "Is the number of water areas equal to the number of commercial buildings in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0185.png",
+    "question": "What is the number of rectangular buildings in the image?",
+    "answer": "11372"
+  },
+  {
+    "image": "rsvqa_0186.png",
+    "question": "Is a square commercial building present in the image?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0187.png",
+    "question": "Is there a small building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0188.png",
+    "question": "Is a square forest present?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0189.png",
+    "question": "Is a rectangular residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0190.png",
+    "question": "Is there a pitch?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0191.png",
+    "question": "Are there more buildings than roads?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0192.png",
+    "question": "Are there less roads than buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0193.png",
+    "question": "Is the number of water areas equal to the number of farmlands?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0194.png",
+    "question": "Is it a rural or an urban area",
+    "answer": "rural"
+  },
+  {
+    "image": "rsvqa_0195.png",
+    "question": "Are there less circular grass areas than water areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0196.png",
+    "question": "How many farmlands are there?",
+    "answer": "42"
+  },
+  {
+    "image": "rsvqa_0197.png",
+    "question": "Is a forest present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0198.png",
+    "question": "Is a water area at the top of a  large building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0199.png",
+    "question": "Are there more roads than large water areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0200.png",
+    "question": "What is the amount of circular commercial buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0201.png",
+    "question": "Are there more roads than farmlands?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0202.png",
+    "question": "Is there a small building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0203.png",
+    "question": "How many commercial buildings at the bottom of a  forest are there?",
+    "answer": "6"
+  },
+  {
+    "image": "rsvqa_0204.png",
+    "question": "Is a square road present?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0205.png",
+    "question": "Are there less medium commercial buildings than water areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0206.png",
+    "question": "Is a rectangular residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0207.png",
+    "question": "How many rectangular commercial buildings are there in the image?",
+    "answer": "3"
+  },
+  {
+    "image": "rsvqa_0208.png",
+    "question": "How many small water areas are there?",
+    "answer": "15"
+  },
+  {
+    "image": "rsvqa_0209.png",
+    "question": "Is the number of square residential buildings equal to the number of water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0210.png",
+    "question": "Are there more roads than commercial buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0211.png",
+    "question": "Are there more water areas than buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0212.png",
+    "question": "Is a residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0213.png",
+    "question": "What is the amount of commercial buildings?",
+    "answer": "3"
+  },
+  {
+    "image": "rsvqa_0214.png",
+    "question": "What is the amount of residential buildings?",
+    "answer": "433"
+  },
+  {
+    "image": "rsvqa_0215.png",
+    "question": "Is a rectangular residential building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0216.png",
+    "question": "What is the amount of roads on the right of a  water area?",
+    "answer": "48"
+  },
+  {
+    "image": "rsvqa_0217.png",
+    "question": "Are there more water areas than roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0218.png",
+    "question": "Are there less buildings than farmlands?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0219.png",
+    "question": "How many small forests are there?",
+    "answer": "27"
+  },
+  {
+    "image": "rsvqa_0220.png",
+    "question": "What is the amount of square commercial buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0221.png",
+    "question": "How many rectangular residential buildings are there?",
+    "answer": "125"
+  },
+  {
+    "image": "rsvqa_0222.png",
+    "question": "Is a medium commercial building present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0223.png",
+    "question": "How many large buildings are there?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0224.png",
+    "question": "What is the amount of large residential buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0225.png",
+    "question": "How many circular roads are there in the image?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0226.png",
+    "question": "Is a rectangular grass area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0227.png",
+    "question": "Is there a medium water area?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0228.png",
+    "question": "Is the number of commercial buildings equal to the number of roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0229.png",
+    "question": "Are there less water areas than buildings?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0230.png",
+    "question": "Is the number of rectangular forests equal to the number of water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0231.png",
+    "question": "What is the number of circular residential buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0232.png",
+    "question": "Are there more commercial buildings than rectangular water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0233.png",
+    "question": "What is the amount of commercial buildings in the image?",
+    "answer": "40"
+  },
+  {
+    "image": "rsvqa_0234.png",
+    "question": "How many roads are there?",
+    "answer": "413"
+  },
+  {
+    "image": "rsvqa_0235.png",
+    "question": "Is a grass area present?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0236.png",
+    "question": "Is there a farmland in the image?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0237.png",
+    "question": "What is the number of forests in the image?",
+    "answer": "96"
+  },
+  {
+    "image": "rsvqa_0238.png",
+    "question": "What is the number of large water areas?",
+    "answer": "7"
+  },
+  {
+    "image": "rsvqa_0239.png",
+    "question": "Are there less commercial buildings than water areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0240.png",
+    "question": "What is the number of circular commercial buildings?",
+    "answer": "0"
+  },
+  {
+    "image": "rsvqa_0241.png",
+    "question": "Is the number of forests equal to the number of residential buildings?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0242.png",
+    "question": "What is the number of medium residential buildings?",
+    "answer": "22"
+  },
+  {
+    "image": "rsvqa_0243.png",
+    "question": "Are there less large water areas than medium grass areas?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0244.png",
+    "question": "Is the number of forests equal to the number of roads?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0245.png",
+    "question": "What is the number of commercial buildings next to a  grass area?",
+    "answer": "40"
+  },
+  {
+    "image": "rsvqa_0246.png",
+    "question": "Are there less roads than grass areas?",
+    "answer": "no"
+  },
+  {
+    "image": "rsvqa_0247.png",
+    "question": "Is there a circular building?",
+    "answer": "yes"
+  },
+  {
+    "image": "rsvqa_0248.png",
+    "question": "What is the amount of square buildings?",
+    "answer": "1"
+  },
+  {
+    "image": "rsvqa_0249.png",
+    "question": "Is there a square road?",
+    "answer": "no"
+  }
+]

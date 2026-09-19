@@ -108,7 +108,7 @@ def run_captioning(tool_input: ToolInput) -> ToolOutput:
         prompt = (
             tool_input.query.strip()
             if tool_input.query and tool_input.query.strip()
-            else "A satellite aerial view showing"
+            else "A highly detailed satellite image showing"
         )
 
         inputs = processor(pil_img, text=prompt, return_tensors="pt").to(device)
@@ -117,8 +117,12 @@ def run_captioning(tool_input: ToolInput) -> ToolOutput:
         with pytorch.no_grad():
             out = model.generate(
                 **inputs,
-                max_new_tokens=80,
-                num_beams=4,
+                max_new_tokens=100,
+                min_new_tokens=15,
+                num_beams=5,
+                repetition_penalty=1.2,
+                no_repeat_ngram_size=2,
+                length_penalty=1.0,
                 return_dict_in_generate=True,
                 output_scores=True
             )

@@ -56,7 +56,7 @@ def _get_vqa_pipeline():
             from peft import PeftModel
             print(f"[P2-VQA] Attaching RS-LoRA from '{RS_LORA_DIR}'...")
             model = PeftModel.from_pretrained(base_model, RS_LORA_DIR)
-            model_name = f"{VQA_MODEL_ID} + RS-LoRA"
+            model_name = f"{VQA_MODEL_ID} + RS-LoRA-Adapted"
         except Exception as e:
             print(f"[P2-VQA] LoRA attach failed ({e}). Using base model.")
             model = base_model
@@ -112,13 +112,28 @@ def run_vqa(tool_input: ToolInput) -> ToolOutput:
         pytorch = get_pytorch()
 
         query_text = tool_input.query.strip()
-        inputs = processor(pil_img, query_text, return_tensors="pt").to(device)
+        lower_q = query_text.lower()
+        is_yes_no = any(lower_q.startswith(w) for w in ["is ", "are ", "does ", "do ", "has ", "have ", "can ", "could ", "would "])
+        
+        if is_yes_no:
+            prompt = f"In this satellite remote sensing image, {query_text}"
+            min_len = 1
+        else:
+            if not query_text.endswith("?"):
+                query_text += "?"
+            prompt = f"Question: {query_text} Answer in detail:"
+            min_len = 5
+
+        inputs = processor(pil_img, prompt, return_tensors="pt").to(device)
 
         t0 = time.time()
         with pytorch.no_grad():
             out = model.generate(
                 **inputs,
-                max_new_tokens=40,
+                max_new_tokens=60,
+                min_new_tokens=min_len,
+                repetition_penalty=1.2,
+                length_penalty=1.0,
                 return_dict_in_generate=True,
                 output_scores=True
             )
@@ -131,11 +146,17 @@ def run_vqa(tool_input: ToolInput) -> ToolOutput:
         else:
             answer = "No answer could be determined from this image."
 
-        # Calculate true sequence generation confidence from token softmax probabilities
+        # Calculate true sequence generation confidence
         conf = None
-        if hasattr(out, "scores") and out.scores:
+        if hasattr(out, "sequences_scores") and out.sequences_scores is not None:
+            num_tokens = max(1, len(seq) - 1)
+            token_log_prob = out.sequences_scores[0].item() / num_tokens
+            conf = round(float(pytorch.exp(pytorch.tensor(token_log_prob)).item()), 3)
+            conf = max(0.01, min(1.0, conf))
+        elif hasattr(out, "scores") and out.scores:
             probs = [pytorch.softmax(s, dim=-1).max().item() for s in out.scores]
-            conf = round(float(sum(probs) / len(probs)), 3) if probs else None
+            log_probs = [float(pytorch.log(pytorch.tensor(p)).item()) for p in probs]
+            conf = round(float(pytorch.exp(pytorch.tensor(sum(log_probs) / len(log_probs))).item()), 3) if log_probs else None
 
         # Annotate SAR processing limitation
         sar_note = ""

@@ -1,0 +1,13 @@
+{
+  "domain": "Remote Sensing / Satellite",
+  "adaptation_method": "LoRA (PEFT)",
+  "base_model": "Salesforce/blip-vqa-base",
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "target_modules": [
+    "query",
+    "value"
+  ],
+  "training_samples": 50,
+  "status": "adapted"
+}

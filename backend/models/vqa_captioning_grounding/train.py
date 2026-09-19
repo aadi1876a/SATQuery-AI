@@ -254,6 +254,10 @@ def main():
                         help="Directory containing satellite images")
     parser.add_argument("--epochs", type=int, default=3,
                         help="Number of training epochs")
+    parser.add_argument("--batch_size", type=int, default=2,
+                        help="Training batch size")
+    parser.add_argument("--max_samples", type=int, default=None,
+                        help="Maximum number of samples to train on")
     parser.add_argument("--lr", type=float, default=5e-5,
                         help="Learning rate")
     parser.add_argument("--output_dir", type=str, default=CHECKPOINTS_DIR,
@@ -273,6 +277,9 @@ def main():
                 "question": item.get("question", ""),
                 "answer": item.get("answer", "")
             })
+        if args.max_samples and len(records) > args.max_samples:
+            print(f"Truncating dataset to {args.max_samples} samples as requested.")
+            records = records[:args.max_samples]
     else:
         print("[Notice] No external RSVQA dataset passed. Using Remote-Sensing sample dataset for adaptation.")
         cache_dir = os.path.join(_CURRENT_DIR, "outputs", "rs_training_samples")
@@ -282,7 +289,8 @@ def main():
         dataset_records=records,
         output_dir=args.output_dir,
         epochs=args.epochs,
-        lr=args.lr
+        lr=args.lr,
+        batch_size=args.batch_size
     )
 
 

@@ -176,17 +176,27 @@ def _run_sam_segmentation(
         with pytorch.no_grad():
             sam_outputs = sam_model(**sam_inputs)
 
-        # transformers 5.x: post_process_masks is on sam_proc.image_processor
-        # or directly on sam_proc. Try both.
-        _postproc = getattr(sam_proc, "image_processor", sam_proc)
-        if not hasattr(_postproc, "post_process_masks"):
-            _postproc = sam_proc
-
-        sam_masks = _postproc.post_process_masks(
-            sam_outputs.pred_masks.cpu(),
-            sam_inputs["original_sizes"].cpu(),
-            sam_inputs["reshaped_input_sizes"].cpu()
-        )
+        # Try HF's post_process_masks with robust fallback
+        try:
+            _postproc = getattr(sam_proc, "image_processor", sam_proc)
+            sam_masks = _postproc.post_process_masks(
+                sam_outputs.pred_masks.cpu(),
+                sam_inputs["original_sizes"].cpu(),
+                sam_inputs["reshaped_input_sizes"].cpu()
+            )
+        except Exception as pp_err:
+            print(f"[P2-SAM] post_process_masks failed ({pp_err}), interpolating manually.")
+            import torch.nn.functional as F
+            pred = sam_outputs.pred_masks
+            N = pred.shape[1]
+            num_masks = pred.shape[2]
+            pred_reshaped = pred[0].view(N * num_masks, 1, pred.shape[-2], pred.shape[-1])
+            
+            # Simple interpolation direct to original size
+            orig_w, orig_h = pil_img.size
+            masks_orig = F.interpolate(pred_reshaped, size=(orig_h, orig_w), mode="bilinear", align_corners=False)
+            masks_orig = masks_orig.view(1, N, num_masks, orig_h, orig_w)
+            sam_masks = [masks_orig[0]]
 
         if sam_masks and len(sam_masks) > 0:
             # sam_masks[0] shape: (N_boxes, N_predicted_masks_per_box, H, W)
@@ -207,6 +217,8 @@ def _run_sam_segmentation(
             raise ValueError("SAM returned empty masks")
 
     except Exception as sam_err:
+        import traceback
+        traceback.print_exc()
         print(f"[P2-SAM] SAM fallback triggered: {sam_err}")
         # Fallback: adaptive region thresholding inside each detected box
         img_arr = np.array(pil_img.convert("L"))
@@ -214,6 +226,10 @@ def _run_sam_segmentation(
         for b in boxes:
             m = np.zeros((h, w), dtype=bool)
             bx1, by1, bx2, by2 = int(round(b[0])), int(round(b[1])), int(round(b[2])), int(round(b[3]))
+            # Fix bounds for fallback
+            bx1, bx2 = max(0, min(bx1, bx2)), min(w, max(bx1, bx2))
+            by1, by2 = max(0, min(by1, by2)), min(h, max(by1, by2))
+            
             if bx2 > bx1 and by2 > by1:
                 region = img_arr[by1:by2, bx1:bx2]
                 threshold = np.mean(region)
@@ -315,11 +331,18 @@ def run_grounding(tool_input: ToolInput) -> ToolOutput:
 
             raw_detections = []
             for b, sc, lb in zip(det_boxes, det_scores, det_labels):
-                x1 = max(0.0, float(b[0]))
-                y1 = max(0.0, float(b[1]))
-                x2 = min(float(w), float(b[2]))
-                y2 = min(float(h), float(b[3]))
-                if (x2 - x1) > 4 and (y2 - y1) > 4:
+                x1, y1 = float(b[0]), float(b[1])
+                x2, y2 = float(b[2]), float(b[3])
+                
+                # Enforce valid box structure
+                if x1 > x2: x1, x2 = x2, x1
+                if y1 > y2: y1, y2 = y2, y1
+                
+                # Clip to image boundaries
+                x1, x2 = max(0.0, min(float(w), x1)), max(0.0, min(float(w), x2))
+                y1, y2 = max(0.0, min(float(h), y1)), max(0.0, min(float(h), y2))
+
+                if (x2 - x1) > 2.0 and (y2 - y1) > 2.0:
                     raw_detections.append(([x1, y1, x2, y2], round(float(sc), 4), lb))
 
             # Sort by score descending and take top-k (max 5 for fast CPU SAM segmentation)
