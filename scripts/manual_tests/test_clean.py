@@ -7,6 +7,8 @@ import glob
 import argparse
 import requests
 from pathlib import Path
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from PIL import Image, ImageDraw
 from backend.app.schemas.schemas import ImageObject, Modality
 from backend.app.validators.input_validator import extract_metadata
