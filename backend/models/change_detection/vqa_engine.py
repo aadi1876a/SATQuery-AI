@@ -10,12 +10,17 @@ with graceful fallback to rule-based spectral analysis if VLM call fails.
 import sys
 import os
 import numpy as np
+import cv2
 from PIL import Image
 from typing import List, Dict, Any, Tuple
 from schemas import SpatialEvidence, ImageObject
 
 # Module-level model cache (loads once, reuses across calls)
 _CACHED_MODELS: Dict[str, Any] = {}
+
+# INTERIM FIX: Disable un-tuned general domain BLIP captioning to prevent satellite imagery hallucinations
+# (e.g., "mars rover", "plane crash"). Set to True only once fine-tuned on RS image-caption pairs (VRSBench).
+ENABLE_BLIP_VLM: bool = False
 
 
 def _get_blip_vlm():
@@ -62,7 +67,7 @@ def _generate_vlm_caption_pair(crop1: Image.Image, crop2: Image.Image, prompt_pr
 
     cap1 = caption_single(crop1)
     cap2 = caption_single(crop2)
-    return f"Changed from {cap1} to {cap2}"
+    return f"T1 showed: {cap1}. T2 showed: {cap2}."
 
 
 class TemporalVQAEngine:
@@ -134,7 +139,7 @@ class TemporalVQAEngine:
         H, W, _ = arr1.shape
 
         analyses = []
-        fallback_used = False
+        fallback_used = not ENABLE_BLIP_VLM
 
         for idx, bbox in enumerate(bboxes, 1):
             if not bbox.coords:
@@ -144,7 +149,7 @@ class TemporalVQAEngine:
             y1, y2 = max(0, int(ymin * H)), min(H, int(ymax * H))
             x1, x2 = max(0, int(xmin * W)), min(W, int(xmax * W))
 
-            # Crop T1 and T2 images for VLM captioning
+            # Crop T1 and T2 images for analysis
             crop1_pil = img1.crop((x1, y1, x2, y2))
             crop2_pil = img2.crop((x1, y1, x2, y2))
 
@@ -169,28 +174,65 @@ class TemporalVQAEngine:
             else:
                 quadrant = f"{lat_str}-{lon_str} quadrant"
 
-            # Try VLM captioning first
+            # Try VLM captioning if enabled; otherwise fallback to rule-based spectral heuristic
             change_description = None
-            try:
-                change_description = _generate_vlm_caption_pair(crop1_pil, crop2_pil)
-            except Exception:
-                # Fallback to spectral rule-based heuristic
+            if ENABLE_BLIP_VLM:
+                try:
+                    change_description = _generate_vlm_caption_pair(crop1_pil, crop2_pil)
+                except Exception:
+                    pass
+
+            if change_description is None:
+                # Multi-Domain Spectral & Edge Classifier (Rule-based domain engine)
                 fallback_used = True
                 crop1 = arr1[y1:y2, x1:x2]
                 crop2 = arr2[y1:y2, x1:x2]
                 if crop1.size > 0 and crop2.size > 0:
-                    mean1 = np.mean(crop1, axis=(0, 1))
-                    mean2 = np.mean(crop2, axis=(0, 1))
-                    diff_mean = mean2 - mean1
-                    r_diff, g_diff, b_diff = diff_mean[0], diff_mean[1], diff_mean[2]
+                    eps = 1e-5
+                    r1, g1, b1 = crop1[:, :, 0], crop1[:, :, 1], crop1[:, :, 2]
+                    r2, g2, b2 = crop2[:, :, 0], crop2[:, :, 1], crop2[:, :, 2]
 
-                    if b_diff > 30 and r_diff < -10:
+                    mean_r1, mean_g1, mean_b1 = np.mean(r1), np.mean(g1), np.mean(b1)
+                    mean_r2, mean_g2, mean_b2 = np.mean(r2), np.mean(g2), np.mean(b2)
+
+                    lum1 = 0.299 * mean_r1 + 0.587 * mean_g1 + 0.114 * mean_b1
+                    lum2 = 0.299 * mean_r2 + 0.587 * mean_g2 + 0.114 * mean_b2
+                    d_lum = lum2 - lum1
+
+                    # NDVI Greenness surrogates
+                    ndvi1 = (mean_g1 - mean_r1) / (mean_g1 + mean_r1 + eps)
+                    ndvi2 = (mean_g2 - mean_r2) / (mean_g2 + mean_r2 + eps)
+                    d_ndvi = ndvi2 - ndvi1
+
+                    # NDWI Water surrogates
+                    ndwi1 = (mean_b1 - mean_r1) / (mean_b1 + mean_r1 + eps)
+                    ndwi2 = (mean_b2 - mean_r2) / (mean_b2 + mean_r2 + eps)
+                    d_ndwi = ndwi2 - ndwi1
+
+                    # Edge Density Delta (Structural/Building indicator)
+                    u_crop1 = np.clip(crop1, 0, 255).astype(np.uint8)
+                    u_crop2 = np.clip(crop2, 0, 255).astype(np.uint8)
+                    gray1 = cv2.cvtColor(u_crop1, cv2.COLOR_RGB2GRAY)
+                    gray2 = cv2.cvtColor(u_crop2, cv2.COLOR_RGB2GRAY)
+                    edge1 = np.mean(cv2.Canny(gray1, 40, 120))
+                    edge2 = np.mean(cv2.Canny(gray2, 40, 120))
+                    d_edge = edge2 - edge1
+
+                    # Color Neutrality / Grayness metric (for built-up structures)
+                    neutrality2 = abs(mean_r2 - mean_g2) + abs(mean_g2 - mean_b2) + abs(mean_b2 - mean_r2)
+
+                    # Domain classification logic (prioritize specific structural/water features before general vegetation loss)
+                    if d_ndwi > 0.08 or (mean_b2 > mean_r2 + 10 and d_lum < -15):
                         change_description = "Water Inundation / Flooding"
-                    elif g_diff < -20:
-                        change_description = "Vegetation Loss / Canopy Deforestation"
-                    elif abs(r_diff - g_diff) < 20 and np.mean(mean2) > np.mean(mean1) + 25:
+                    elif d_ndwi < -0.10 or (d_lum > 20 and ndwi1 > 0.05 and ndwi2 < -0.05):
+                        change_description = "Water Body Recession / Lake Shrinkage"
+                    elif d_edge > 3.0 or (d_lum > 10 and neutrality2 < 35) or (d_lum > 20 and neutrality2 < 45):
                         change_description = "New Building / Concrete Structure"
-                    elif r_diff > 20:
+                    elif d_ndvi > 0.12 or (mean_g2 - mean_g1 > 18 and d_ndvi > 0.05):
+                        change_description = "Vegetation Growth / Reforestation"
+                    elif d_ndvi < -0.10 or (mean_g1 - mean_g2 > 18 and d_ndvi < -0.05):
+                        change_description = "Vegetation Loss / Deforestation"
+                    elif mean_r2 - mean_r1 > 15 and d_ndvi < 0:
                         change_description = "Land Clearing / Soil Excavation"
                     else:
                         change_description = "Structural & Land Surface Modification"
@@ -210,53 +252,55 @@ class TemporalVQAEngine:
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"Based on temporal change analysis between {date_t1} and {date_t2}, no significant changes were detected for query '{query}'."
+            return f"Temporal analysis between {date_t1} and {date_t2}: No significant surface changes were detected for query '{query}'."
 
-        descriptions = [f"Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses]
-        details = "; ".join(descriptions)
+        descriptions = [f"• Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses]
+        details = "\n".join(descriptions)
         return (
-            f"A total of {num_changes} distinct changed region(s) were identified between {date_t1} and {date_t2}. "
-            f"Detailed breakdown of detected modifications: {details}."
+            f"Bi-Temporal Change Analysis Report ({date_t1} -> {date_t2}):\n"
+            f"A total of {num_changes} distinct change region(s) were identified.\n\n"
+            f"Detected Zone Breakdown:\n{details}"
         )
 
     def _generate_location_answer(
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"No spatial change locations were found between {date_t1} and {date_t2} for query '{query}'."
+            return f"Temporal analysis between {date_t1} and {date_t2}: No spatial change locations found for query '{query}'."
 
-        loc_descriptions = []
-        for a in analyses:
-            loc_descriptions.append(f"Region #{a['index']} located in the {a['quadrant']} ({a['change_type']})")
-
-        loc_str = "; ".join(loc_descriptions)
+        loc_descriptions = [f"• Region #{a['index']} in {a['quadrant']}: {a['change_type']}" for a in analyses]
+        loc_str = "\n".join(loc_descriptions)
         return (
-            f"Detected {num_changes} spatial change zone(s) between {date_t1} and {date_t2}: {loc_str}."
+            f"Bi-Temporal Spatial Location Report ({date_t1} -> {date_t2}):\n"
+            f"Identified {num_changes} spatial change zone(s) in scene:\n{loc_str}"
         )
 
     def _generate_landcover_answer(
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], changed_pct: float, date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"No land cover modifications were detected between {date_t1} and {date_t2} relating to '{query}'."
+            return f"Temporal land cover analysis between {date_t1} and {date_t2}: No modifications detected relating to '{query}'."
 
-        details = "; ".join([f"Zone #{a['index']} in {a['quadrant']} ({a['change_type']})" for a in analyses])
+        details = "\n".join([f"• Zone #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses])
 
         return (
-            f"Temporal analysis for query '{query}' between {date_t1} and {date_t2} observed approx {changed_pct}% "
-            f"area footprint change across {num_changes} localized zone(s). Observed details: {details}."
+            f"Bi-Temporal Land Cover Report ({date_t1} -> {date_t2}):\n"
+            f"• Query Intent: '{query}'\n"
+            f"• Total Changed Footprint: ~{changed_pct}% of scene area across {num_changes} zone(s)\n\n"
+            f"Observed Modifications:\n{details}"
         )
 
     def _generate_general_summary_answer(
         self, query: str, num_changes: int, analyses: List[Dict[str, Any]], changed_pct: float, date_t1: str, date_t2: str
     ) -> str:
         if num_changes == 0:
-            return f"No visual or structural changes were detected between acquisition dates {date_t1} and {date_t2}."
+            return f"Bi-Temporal Temporal VQA Summary ({date_t1} -> {date_t2}): No visual or structural surface changes detected."
 
-        details = "; ".join([f"Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses])
+        details = "\n".join([f"• Region #{a['index']} ({a['quadrant']}): {a['change_type']}" for a in analyses])
 
         return (
-            f"Bi-temporal VQA report ({date_t1} -> {date_t2}) for query '{query}': "
-            f"Identified {num_changes} primary change region(s) spanning ~{changed_pct}% of the analyzed scene. "
-            f"Observed changes: {details}."
+            f"Bi-Temporal VQA Summary ({date_t1} -> {date_t2}) for query '{query}':\n"
+            f"• Scene Change Footprint: ~{changed_pct}% of total image area\n"
+            f"• Total Change Clusters: {num_changes} primary region(s)\n\n"
+            f"Observed Changes:\n{details}"
         )
