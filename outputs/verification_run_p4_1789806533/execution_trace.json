@@ -1,0 +1,27 @@
+{
+  "status": "error",
+  "query": "Identify the predominant land cover by fusing optical and sar together.",
+  "answer": null,
+  "visual_evidence": [],
+  "confidence": null,
+  "execution_trace": {
+    "task_detected": "fusion_analysis",
+    "input_validation": {
+      "images_provided": 2,
+      "modalities": [
+        "sar",
+        "optical"
+      ],
+      "co_registered": true,
+      "format": "GeoTIFF",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "optical_sar_fusion_v1"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": "Inference failed: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1006)>"
+}

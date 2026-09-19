@@ -1,0 +1,71 @@
+{
+  "status": "success",
+  "text_answer": "Bi-temporal VQA report (T1 -> T2) for query 'What changed between these two dates?': Identified 5 primary change region(s) spanning ~48.75% of the analyzed scene. Observed changes: Region #1 (Central-West quadrant): Changed from the earth ' s surface to the earth ' s surface; Region #2 (North-East quadrant): Changed from the earth ' s surface to the location of the moon; Region #3 (North-East quadrant): Changed from the location of the sun to the earth ' s surface; Region #4 (North-West quadrant): Changed from the earth ' s surface to the location of the moon; Region #5 (Center of the scene): Changed from a patch of land to the location of the crater.",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/p3/run_1789802203/change_mask_1789802203.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.3973,
+        0.0536,
+        0.567,
+        0.1161
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.7009,
+        0.1339,
+        0.8884
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.4732,
+        0.2455,
+        0.6429
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0938,
+        0.1429,
+        0.2857
+      ],
+      "mask_path": null,
+      "label": "Change Region #4"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #5"
+    }
+  ],
+  "confidence": 0.805,
+  "raw_output_path": "outputs/p3/run_1789802203/change_overlay_1789802203.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)",
+  "error_message": null
+}

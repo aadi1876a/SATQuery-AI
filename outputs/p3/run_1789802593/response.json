@@ -1,0 +1,67 @@
+{
+  "status": "success",
+  "query": "What changed between these two dates?",
+  "answer": "Bi-Temporal VQA Summary (T1 -> T2) for query 'What changed between these two dates?':\n\u2022 Scene Change Footprint: ~60.01% of total image area\n\u2022 Total Change Clusters: 3 primary region(s)\n\nObserved Changes:\n\u2022 Region #1 (South-East quadrant): Water Inundation / Flooding\n\u2022 Region #2 (North-East quadrant): New Building / Concrete Structure\n\u2022 Region #3 (Center of the scene): Vegetation Growth / Reforestation",
+  "visual_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/p3/run_1789802593/change_mask_1789802593.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.6027,
+        0.9152,
+        0.6875,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.9107,
+        0.1429,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    }
+  ],
+  "confidence": 0.907,
+  "execution_trace": {
+    "task_detected": "change_vqa",
+    "input_validation": {
+      "images_provided": 2,
+      "modalities": [
+        "optical",
+        "optical"
+      ],
+      "co_registered": true,
+      "format": "PNG",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}

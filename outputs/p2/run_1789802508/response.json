@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "query": "What land cover is visible in this satellite image?",
+  "answer": "Farmland",
+  "visual_evidence": [],
+  "confidence": 0.53,
+  "execution_trace": {
+    "task_detected": "vqa",
+    "input_validation": {
+      "images_provided": 1,
+      "modalities": [
+        "optical"
+      ],
+      "co_registered": null,
+      "format": "PNG",
+      "status": "valid",
+      "failure_reason": null
+    },
+    "tools_selected": [
+      "Salesforce/blip-vqa-base"
+    ],
+    "parameters_used": {}
+  },
+  "report_download_url": null,
+  "reason": null
+}

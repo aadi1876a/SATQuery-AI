@@ -1,0 +1,49 @@
+{
+  "status": "success",
+  "text_answer": "Bi-Temporal VQA Summary (T1 -> T2) for query 'What changed between these two dates?':\n• Scene Change Footprint: ~60.01% of total image area\n• Total Change Clusters: 3 primary region(s)\n\nObserved Changes:\n• Region #1 (South-East quadrant): Water Inundation / Flooding\n• Region #2 (North-East quadrant): New Building / Concrete Structure\n• Region #3 (Center of the scene): Vegetation Growth / Reforestation",
+  "spatial_evidence": [
+    {
+      "type": "mask",
+      "coords": null,
+      "mask_path": "outputs/p3/run_1789802593/change_mask_1789802593.png",
+      "label": "Binary Change Mask"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.6027,
+        0.9152,
+        0.6875,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #1"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.9107,
+        0.1429,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #2"
+    },
+    {
+      "type": "bbox",
+      "coords": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "mask_path": null,
+      "label": "Change Region #3"
+    }
+  ],
+  "confidence": 0.907,
+  "raw_output_path": "outputs/p3/run_1789802593/change_overlay_1789802593.png",
+  "model_used": "P3-BiTemporal-DiffEngine-v1.3 (Multi-Spectral + BLIP VLM VQA)",
+  "error_message": null
+}

@@ -10,10 +10,10 @@ from backend.models.vqa_captioning_grounding.inference import (
     call_caption_model,
 )
 from backend.models.change_detection.inference import call_change_model
+from backend.models.fusion.inference import call_fusion_model
 
 from agent.tools.mock_tools import (
     call_grounding_model,
-    call_fusion_model,
 )
 
 TOOL_REGISTRY = {
