@@ -17,8 +17,8 @@ This is clearly documented as SAR visualization input, NOT native SAR understand
 
 import os
 import numpy as np
-from PIL import Image
-from typing import Tuple
+from PIL import Image, ImageEnhance
+from typing import Tuple, Dict, Any, List
 
 # Add backend to sys.path for schema import
 import sys
@@ -198,10 +198,83 @@ def force_load_as_numpy(path: str) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
+# Optical / High-Level Preprocessing (Phase A)
+# ---------------------------------------------------------------------------
+
+def detect_and_enhance_optical(pil_img: Image.Image, target_size: int = None) -> Tuple[Image.Image, Dict[str, Any]]:
+    """
+    Detects low resolution and dark images. Upscales with Lanczos and applies contrast stretch.
+    Returns the processed image and metadata dict.
+    """
+    w, h = pil_img.size
+    min_side = min(w, h)
+    
+    meta = {
+        "original_size": [w, h],
+        "scale_factor": 1.0,
+        "low_resolution": False,
+        "dark_enhanced": False,
+        "warnings": []
+    }
+    
+    # 1. Contrast enhancement for dark images
+    gray_arr = np.array(pil_img.convert("L"))
+    mean_val = np.mean(gray_arr)
+    if mean_val < 50:
+        meta["dark_enhanced"] = True
+        # Mild percentile stretch
+        r, g, b = pil_img.split()
+        r_arr = percentile_stretch(np.array(r), 1.0, 99.0)
+        g_arr = percentile_stretch(np.array(g), 1.0, 99.0)
+        b_arr = percentile_stretch(np.array(b), 1.0, 99.0)
+        pil_img = Image.merge("RGB", (Image.fromarray(r_arr), Image.fromarray(g_arr), Image.fromarray(b_arr)))
+        enhancer = ImageEnhance.Contrast(pil_img)
+        pil_img = enhancer.enhance(1.2)
+        
+    # 2. Low-res upscaling
+    if min_side < 256 and target_size is not None:
+        meta["low_resolution"] = True
+        meta["warnings"].append("low_resolution: Upscaled image for better VLM perception.")
+        scale_factor = target_size / float(min_side)
+        new_w = int(w * scale_factor)
+        new_h = int(h * scale_factor)
+        pil_img = pil_img.resize((new_w, new_h), resample=Image.Resampling.LANCZOS)
+        meta["scale_factor"] = scale_factor
+        
+    return pil_img, meta
+
+def generate_tiles(pil_img: Image.Image, tile_size: int = 1024, overlap: int = 128) -> List[Tuple[Image.Image, Tuple[int, int]]]:
+    """
+    Tiles an image into overlapping patches.
+    Returns a list of (tile_image, (offset_x, offset_y)).
+    """
+    w, h = pil_img.size
+    if w <= tile_size and h <= tile_size:
+        return [(pil_img, (0, 0))]
+        
+    tiles = []
+    stride = tile_size - overlap
+    for y in range(0, h, stride):
+        for x in range(0, w, stride):
+            box_x2 = min(x + tile_size, w)
+            box_y2 = min(y + tile_size, h)
+            # Adjust x, y if tile is smaller than tile_size at boundaries
+            box_x1 = max(0, box_x2 - tile_size)
+            box_y1 = max(0, box_y2 - tile_size)
+            
+            tile = pil_img.crop((box_x1, box_y1, box_x2, box_y2))
+            tiles.append((tile, (box_x1, box_y1)))
+            
+            if box_x2 == w: break
+        if box_y2 == h: break
+        
+    return tiles
+
+# ---------------------------------------------------------------------------
 # Main entry point: load any satellite image as RGB
 # ---------------------------------------------------------------------------
 
-def load_image_rgb(image_obj: ImageObject, use_false_color_sar: bool = True) -> Tuple[Image.Image, str]:
+def load_image_rgb(image_obj: ImageObject, use_false_color_sar: bool = True, target_size: int = None) -> Tuple[Image.Image, Dict[str, Any], str]:
     """
     Safely loads satellite imagery (PNG, JPG, TIFF, SAR GeoTIFF) and converts
     to standard 8-bit RGB PIL Image for Vision-Language Models.
@@ -260,7 +333,10 @@ def load_image_rgb(image_obj: ImageObject, use_false_color_sar: bool = True) -> 
                 else:
                     band = src.read(1).astype(np.float32)
                     rgb_arr = preprocess_sar_band(band, use_false_color=use_false_color_sar)
-            return Image.fromarray(rgb_arr.astype(np.uint8), mode="RGB"), target_path
+            
+            pil_img = Image.fromarray(rgb_arr.astype(np.uint8), mode="RGB")
+            pil_img, meta = detect_and_enhance_optical(pil_img, target_size)
+            return pil_img, meta, target_path
         except ImportError:
             pass
         except Exception as rasterio_err:
@@ -276,24 +352,32 @@ def load_image_rgb(image_obj: ImageObject, use_false_color_sar: bool = True) -> 
             # For SAR images in standard image formats (PNG, JPG), run full SAR preprocessing
             gray_arr = np.array(raw_img.convert("L"), dtype=np.float32)
             rgb_arr = preprocess_sar_band(gray_arr, use_false_color=use_false_color_sar)
-            return Image.fromarray(rgb_arr.astype(np.uint8), mode="RGB"), target_path
+            pil_img = Image.fromarray(rgb_arr.astype(np.uint8), mode="RGB")
+            pil_img, meta = detect_and_enhance_optical(pil_img, target_size)
+            return pil_img, meta, target_path
 
         if raw_img.mode in ("RGB", "RGBA", "L", "P"):
-            return raw_img.convert("RGB"), target_path
+            pil_img = raw_img.convert("RGB")
+            pil_img, meta = detect_and_enhance_optical(pil_img, target_size)
+            return pil_img, meta, target_path
         try:
             arr = np.array(raw_img)
         except Exception:
             width, height = raw_img.size
             raw_bytes = raw_img.tobytes()
             arr = np.frombuffer(raw_bytes, dtype=np.float32).reshape(height, width, -1)
-        return convert_array_to_rgb(arr, target_path)
+        pil_img, p = convert_array_to_rgb(arr, target_path)
+        pil_img, meta = detect_and_enhance_optical(pil_img, target_size)
+        return pil_img, meta, p
     except Exception as pil_err:
         # -----------------------------------------------------------------------
         # Strategy 3: Raw binary NumPy fallback
         # -----------------------------------------------------------------------
         try:
             arr = force_load_as_numpy(target_path)
-            return convert_array_to_rgb(arr, target_path)
+            pil_img, p = convert_array_to_rgb(arr, target_path)
+            pil_img, meta = detect_and_enhance_optical(pil_img, target_size)
+            return pil_img, meta, p
         except Exception as numpy_err:
             raise ValueError(
                 f"Could not load '{os.path.basename(target_path)}' with any method.\n"

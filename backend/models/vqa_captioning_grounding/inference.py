@@ -51,10 +51,10 @@ from backend.schemas import ImageObject, ToolInput, ToolOutput, SpatialEvidence,
 # ---------------------------------------------------------------------------
 from .vqa import run_vqa, VQA_MODEL_ID
 from .captioning import run_captioning, CAPTION_MODEL_ID
-from .grounding import run_grounding, GROUNDING_MODEL_ID, SAM_MODEL_ID, COMBINED_MODEL_ID
+from .grounding import run_grounding, GROUNDING_MODEL_ID
 from .preprocessing import load_image_rgb
 from .postprocessing import save_mask, generate_overlay
-from .utils import get_device, ensure_dirs, OUTPUTS_DIR
+from .utils import ensure_dirs, OUTPUTS_DIR
 
 
 # ---------------------------------------------------------------------------
@@ -108,6 +108,28 @@ def run(tool_input: ToolInput) -> ToolOutput:
         assert isinstance(output, ToolOutput)
     """
     if tool_input.task == TaskType.vqa:
+        q = tool_input.query.strip().lower() if tool_input.query else ""
+        verify = tool_input.params and tool_input.params.get("verify_with_grounding") is True
+        if verify and (q.startswith("is there a ") or q.startswith("are there ")):
+            target = q.replace("is there a ", "").replace("are there ", "").replace("?", "").strip()
+            if target.startswith("any "):
+                target = target[4:]
+            
+            mod_input = ToolInput(
+                task=TaskType.grounding,
+                query=target,
+                images=tool_input.images,
+                params=tool_input.params
+            )
+            g_out = run_grounding(mod_input)
+            
+            if g_out.status == "success" and len(g_out.spatial_evidence) > 0:
+                g_out.text_answer = f"Yes, {target} is present."
+            elif g_out.status == "success":
+                g_out.text_answer = "No."
+                
+            return g_out
+            
         return run_vqa(tool_input)
     elif tool_input.task == TaskType.captioning:
         return run_captioning(tool_input)
@@ -158,7 +180,10 @@ if __name__ == "__main__":
     parser.add_argument("--modality", type=str, default="optical",
                         choices=["optical", "sar"],
                         help="Image modality: optical or sar")
-    parser.add_argument("--threshold", type=float, default=0.10,
+    parser.add_argument("--mode", type=str, default="fast",
+                        choices=["fast", "quality"],
+                        help="Execution mode (Phase B/C models)")
+    parser.add_argument("--threshold", type=float, default=None,
                         help="Grounding detection confidence threshold")
     args = parser.parse_args()
 
@@ -192,29 +217,25 @@ if __name__ == "__main__":
         print("\n" + "=" * 65)
         if t == "vqa":
             q = args.query or "What objects or natural features are visible?"
-            print(f" TESTING VQA | Question: '{q}'")
-            print("=" * 65)
-            res = run_vqa(ToolInput(task=TaskType.vqa, query=q, images=[img_obj]))
+            print(f" 1. Visual Question Answering\n    Question: {q}")
+            res = run_vqa(ToolInput(task=TaskType.vqa, query=q, images=[img_obj], params={"mode": args.mode}))
         elif t == "captioning":
-            print(" TESTING CAPTIONING")
-            print("=" * 65)
-            res = run_captioning(ToolInput(task=TaskType.captioning, query="", images=[img_obj]))
+            print(f" 2. Image Captioning")
+            res = run_captioning(ToolInput(task=TaskType.captioning, query="", images=[img_obj], params={"mode": args.mode}))
         elif t == "grounding":
             target = args.query or "buildings"
-            print(f" TESTING GROUNDING | Target: '{target}'")
-            print("=" * 65)
+            print(f" 3. Grounding & Segmentation (target: '{target}')")
+            params = {"mode": args.mode}
+            if args.threshold is not None:
+                params["threshold"] = args.threshold
             res = run_grounding(ToolInput(
                 task=TaskType.grounding, query=target, images=[img_obj],
-                params={"threshold": args.threshold}
+                params=params
             ))
 
-        print(f" Status        : {res.status}")
-        print(f" Model Used    : {res.model_used}")
-        print(f" Answer/Output : {res.text_answer}")
-        print(f" Confidence    : {res.confidence}")
-        print(f" Evidence Count: {len(res.spatial_evidence)}")
-        if res.raw_output_path:
-            print(f" Visual Overlay: {res.raw_output_path}")
-        if res.error_message:
-            print(f" Error Message : {res.error_message}")
+        if res.status == "success":
+            print(f"    {res.text_answer}")
+            print(f"    Output Sidecar: {res.raw_output_path}")
+        else:
+            print(f"    Error: {res.error_message}")
         print("=" * 65)

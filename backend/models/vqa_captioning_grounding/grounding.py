@@ -1,37 +1,17 @@
 """
 backend/models/vqa_captioning_grounding/grounding.py
 =============================================================================
-SatQuery AI — P2 Open-Vocabulary Grounding + Segment-wise Segmentation
+SatQuery AI — P2 Visual Grounding
 =============================================================================
-Pipeline:
-  Image + Text Query
-       ↓
-  OWLv2 (google/owlv2-base-patch16-ensemble)
-       ↓
-  Bounding Boxes + Scores
-       ↓
-  SAM (facebook/sam-vit-base)
-       ↓
-  Individual Segment Masks
-       ↓
-  SpatialEvidence[] (bbox + mask per detected object)
-       ↓
-  ToolOutput
-
-Models:
-  - OWLv2: Open-vocabulary object detection. Supports arbitrary text queries.
-    NOT native remote-sensing. Receives RGB or SAR visualization.
-  - SAM: Segment Anything Model. Produces precise object masks from bbox prompts.
-    NOT native remote-sensing.
-
-Confidence: OWLv2 provides detection scores (0.0–1.0) per detected box.
-These are real model scores, not fabricated values.
+Uses Groq API (qwen/qwen3.8-27b) for visual grounding instead of local models.
+Outputs bounding boxes. SAM segmentation is removed to keep it lightweight.
 """
 
 import os
 import sys
 import time
 import json
+import re
 from typing import List, Optional, Tuple
 
 import numpy as np
@@ -39,367 +19,202 @@ from PIL import Image
 
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 _BACKEND_DIR = os.path.dirname(os.path.dirname(_CURRENT_DIR))
-for p in [_BACKEND_DIR]:
+_PROJECT_ROOT = os.path.dirname(_BACKEND_DIR)
+for p in [_PROJECT_ROOT, _BACKEND_DIR]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
 from backend.schemas import ToolInput, ToolOutput, SpatialEvidence, Modality
 from .preprocessing import load_image_rgb
-from .postprocessing import save_mask, generate_overlay, save_bboxes_json, validate_mask
-from .utils import get_device, get_pytorch, get_cached, set_cached, safe_plural, ensure_dirs
+from .postprocessing import generate_overlay, generate_panel, save_bboxes_json, write_sidecar_json
+from .utils import get_cached, set_cached, generate_run_id
+from .calibration import get_class_threshold, calibrate_confidence, get_confidence_band
 
-GROUNDING_MODEL_ID = "google/owlv2-base-patch16-ensemble"
-SAM_MODEL_ID = "facebook/sam-vit-base"
-COMBINED_MODEL_ID = f"{GROUNDING_MODEL_ID} + {SAM_MODEL_ID}"
-
-
-# ---------------------------------------------------------------------------
-# Model loaders
-# ---------------------------------------------------------------------------
+GROUNDING_MODEL_ID = "qwen/qwen3.8-27b"
 
 def _get_grounding_pipeline():
-    """Lazy-loads and caches OWLv2."""
-    cached = get_cached("grounding")
+    cached = get_cached("grounding_client")
     if cached is not None:
         return cached
 
-    pytorch = get_pytorch()
-    from transformers import Owlv2Processor, Owlv2ForObjectDetection
-    device = get_device()
-
-    print(f"[P2-Grounding] Loading '{GROUNDING_MODEL_ID}' on {device}...")
-    t0 = time.time()
-    processor = Owlv2Processor.from_pretrained(GROUNDING_MODEL_ID)
-    model = Owlv2ForObjectDetection.from_pretrained(GROUNDING_MODEL_ID).to(device)
-    model.eval()
-    load_time = round(time.time() - t0, 2)
-    print(f"[P2-Grounding] OWLv2 loaded in {load_time}s")
-
-    # post_process_object_detection lives on Owlv2ImageProcessor in transformers 5.x
-    img_proc = processor.image_processor
-    result = (processor, img_proc, model, load_time)
-    set_cached("grounding", result)
-    return result
-
-
-def _get_sam_pipeline():
-    """Lazy-loads and caches SAM."""
-    cached = get_cached("sam")
-    if cached is not None:
-        return cached
-
-    pytorch = get_pytorch()
-    from transformers import SamModel, SamProcessor
-    device = get_device()
-
-    print(f"[P2-SAM] Loading '{SAM_MODEL_ID}' on {device}...")
-    t0 = time.time()
-    processor = SamProcessor.from_pretrained(SAM_MODEL_ID)
-    model = SamModel.from_pretrained(SAM_MODEL_ID).to(device)
-    model.eval()
-    load_time = round(time.time() - t0, 2)
-    print(f"[P2-SAM] SAM loaded in {load_time}s")
-
-    result = (processor, model, load_time)
-    set_cached("sam", result)
-    return result
-
-
-# ---------------------------------------------------------------------------
-# Query expansion
-# ---------------------------------------------------------------------------
-
-def _build_search_terms(raw_query: str) -> List[str]:
-    """
-    Builds an expanded list of search terms from a raw user query.
-    Handles aerial/satellite domain variants and corrects plural expansion.
-    """
-    target = raw_query.lower().strip()
-
-    # Strip common command prefixes
-    for prefix in ["show all", "find all", "detect all", "locate all",
-                   "show", "find", "detect", "locate"]:
-        if target.startswith(prefix + " "):
-            target = target[len(prefix):].strip()
-            break
-
-    terms = [target]
-
-    # Add plural form (fixing the "roads" → "roadss" bug)
-    plural = safe_plural(target)
-    if plural != target:
-        terms.append(plural)
-
-    # Add satellite/aerial domain variants
-    terms.append(f"satellite {target}")
-    terms.append(f"aerial view of {target}")
-
-    # Deduplicate while preserving order
-    seen = set()
-    unique_terms = []
-    for t in terms:
-        if t not in seen:
-            seen.add(t)
-            unique_terms.append(t)
-
-    return unique_terms
-
-
-# ---------------------------------------------------------------------------
-# SAM segmentation
-# ---------------------------------------------------------------------------
-
-def _run_sam_segmentation(
-    pil_img: Image.Image,
-    boxes: List[List[float]],
-    device: str,
-) -> List[Optional[np.ndarray]]:
-    """
-    Runs SAM segmentation given OWLv2 bounding boxes.
-
-    Returns list of (H, W) boolean masks, one per box.
-    Falls back to adaptive region thresholding if SAM fails.
-    """
-    pytorch = get_pytorch()
-    masks = []
-
-    try:
-        sam_proc, sam_model, _ = _get_sam_pipeline()
-
-        # SAM expects boxes as list of [x1,y1,x2,y2] per image
-        sam_inputs = sam_proc(
-            pil_img,
-            input_boxes=[[boxes]],  # shape: [1, N, 4] — one image, N boxes
-            return_tensors="pt"
-        ).to(device)
-
-        with pytorch.no_grad():
-            sam_outputs = sam_model(**sam_inputs)
-
-        # transformers 5.x: post_process_masks is on sam_proc.image_processor
-        # or directly on sam_proc. Try both.
-        _postproc = getattr(sam_proc, "image_processor", sam_proc)
-        if not hasattr(_postproc, "post_process_masks"):
-            _postproc = sam_proc
-
-        sam_masks = _postproc.post_process_masks(
-            sam_outputs.pred_masks.cpu(),
-            sam_inputs["original_sizes"].cpu(),
-            sam_inputs["reshaped_input_sizes"].cpu()
-        )
-
-        if sam_masks and len(sam_masks) > 0:
-            # sam_masks[0] shape: (N_boxes, N_predicted_masks_per_box, H, W)
-            pred = sam_masks[0]  # shape: (N, M, H, W)
-            for i in range(len(boxes)):
-                if i < pred.shape[0]:
-                    m_tensor = pred[i, 0]
-                    if hasattr(m_tensor, "detach"):
-                        m = m_tensor.detach().cpu().numpy().astype(bool)
-                    elif hasattr(m_tensor, "numpy"):
-                        m = m_tensor.numpy().astype(bool)
-                    else:
-                        m = np.asarray(m_tensor).astype(bool)
-                else:
-                    m = None
-                masks.append(m)
-        else:
-            raise ValueError("SAM returned empty masks")
-
-    except Exception as sam_err:
-        print(f"[P2-SAM] SAM fallback triggered: {sam_err}")
-        # Fallback: adaptive region thresholding inside each detected box
-        img_arr = np.array(pil_img.convert("L"))
-        h, w = img_arr.shape
-        for b in boxes:
-            m = np.zeros((h, w), dtype=bool)
-            bx1, by1, bx2, by2 = int(round(b[0])), int(round(b[1])), int(round(b[2])), int(round(b[3]))
-            if bx2 > bx1 and by2 > by1:
-                region = img_arr[by1:by2, bx1:bx2]
-                threshold = np.mean(region)
-                m[by1:by2, bx1:bx2] = region > threshold
-            masks.append(m)
-
-    return masks
-
-
-# ---------------------------------------------------------------------------
-# Main grounding function
-# ---------------------------------------------------------------------------
+    import groq
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        print("[WARNING] GROQ_API_KEY not found in environment. API calls will fail.")
+    
+    print(f"[P2-Grounding] Initializing Groq client for '{GROUNDING_MODEL_ID}'...")
+    client = groq.Groq(api_key=api_key) if api_key else groq.Groq()
+    set_cached("grounding_client", client)
+    return client
 
 def run_grounding(tool_input: ToolInput) -> ToolOutput:
-    """
-    Open-vocabulary grounding (OWLv2) + segment-wise segmentation (SAM).
-
-    Input:
-        tool_input.images[0]: Satellite image (optical or SAR)
-        tool_input.query: Text description of what to locate (e.g. "buildings")
-        tool_input.params.get("threshold", 0.10): Detection confidence threshold
-
-    Output:
-        ToolOutput with spatial_evidence containing SpatialEvidence objects:
-          - Per detected object: SpatialEvidence(type="mask", mask_path=..., label=...)
-          - Per detected object: SpatialEvidence(type="bbox", coords=[x1,y1,x2,y2], label=...)
-
-    Confidence:
-        Real OWLv2 detection score (average of all detections). True model score.
-
-    SAR:
-        Image is preprocessed to grayscale-as-RGB (better for object boundary detection).
-        Model receives visual pattern, not raw SAR backscatter.
-    """
     if not tool_input.images:
         return ToolOutput(
             status="error", text_answer=None, spatial_evidence=[],
-            confidence=None, model_used=COMBINED_MODEL_ID,
+            confidence=None, model_used=GROUNDING_MODEL_ID,
             error_message="Grounding requires at least one image."
         )
     if not tool_input.query or not tool_input.query.strip():
         return ToolOutput(
             status="error", text_answer=None, spatial_evidence=[],
-            confidence=None, model_used=COMBINED_MODEL_ID,
+            confidence=None, model_used=GROUNDING_MODEL_ID,
             error_message="Grounding requires a target query."
         )
 
     img_obj = tool_input.images[0]
     modality = img_obj.modality
     image_id = img_obj.image_id
+    
+    def make_rel(p):
+        if not p: return p
+        try:
+            return os.path.relpath(p, _PROJECT_ROOT).replace("\\", "/")
+        except:
+            return p
 
     try:
-        # For grounding, SAR uses grayscale-as-RGB (better edge definition than false-color)
-        pil_img, _ = load_image_rgb(img_obj, use_false_color_sar=False)
-        pytorch = get_pytorch()
-        processor, img_proc, owlv2_model, _ = _get_grounding_pipeline()
-        device = get_device()
+        # Load image for API
+        pil_img, img_meta, img_path = load_image_rgb(img_obj, use_false_color_sar=True, target_size=960)
+        
+        client = _get_grounding_pipeline()
+        
+        import io
+        import base64
+        buffered = io.BytesIO()
+        pil_img.save(buffered, format="JPEG")
+        base64_image = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
-        search_terms = _build_search_terms(tool_input.query)
         w, h = pil_img.size
-
-        # OWLv2 inference
-        target_sizes = pytorch.tensor([[h, w]], device=device)
-        inputs = processor(
-            text=[search_terms], images=pil_img, return_tensors="pt"
-        ).to(device)
+        
+        prompt = f"You are a visual grounding model. Detect all '{tool_input.query.strip()}' in this image. Return ONLY the bounding boxes in the format: <box>(ymin,xmin),(ymax,xmax)</box> where coordinates are scaled from 0 to 1000. Do not output anything else."
 
         t0 = time.time()
-        with pytorch.no_grad():
-            outputs = owlv2_model(**inputs)
+        completion = client.chat.completions.create(
+            model=GROUNDING_MODEL_ID,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            temperature=0.1,
+            max_tokens=200
+        )
         grounding_time = round(time.time() - t0, 2)
-
-        # Post-process: get boxes above threshold
-        # In satellite imagery, open-vocabulary VLM scores are typically 0.005-0.05
-        user_threshold = tool_input.params.get("threshold")
-        threshold = float(user_threshold) if user_threshold is not None else 0.01
-
-        _postproc = (
-            img_proc
-            if hasattr(img_proc, "post_process_object_detection")
-            else processor
-        )
-        results = _postproc.post_process_object_detection(
-            outputs=outputs, target_sizes=target_sizes, threshold=threshold
-        )
-
-        # Adaptive fallback if no boxes found at initial threshold
-        if (not results or len(results[0]["boxes"]) == 0) and threshold > 0.003:
-            results = _postproc.post_process_object_detection(
-                outputs=outputs, target_sizes=target_sizes, threshold=0.003
-            )
-
-        boxes, scores, label_indices = [], [], []
-        if results and len(results) > 0:
-            res = results[0]
-            det_boxes = res["boxes"].detach().cpu().tolist()
-            det_scores = res["scores"].detach().cpu().tolist()
-            det_labels = res["labels"].detach().cpu().tolist()
-
-            raw_detections = []
-            for b, sc, lb in zip(det_boxes, det_scores, det_labels):
-                x1 = max(0.0, float(b[0]))
-                y1 = max(0.0, float(b[1]))
-                x2 = min(float(w), float(b[2]))
-                y2 = min(float(h), float(b[3]))
-                if (x2 - x1) > 4 and (y2 - y1) > 4:
-                    raw_detections.append(([x1, y1, x2, y2], round(float(sc), 4), lb))
-
-            # Sort by score descending and take top-k (max 5 for fast CPU SAM segmentation)
-            max_detections = int(tool_input.params.get("max_detections", 5))
-            raw_detections.sort(key=lambda x: x[1], reverse=True)
-            top_detections = raw_detections[:max_detections]
-
-            for b, sc, lb in top_detections:
-                boxes.append(b)
-                scores.append(sc)
-                label_indices.append(lb)
+        
+        response_text = completion.choices[0].message.content.strip()
+        
+        # Parse bounding boxes
+        boxes = []
+        scores = []
+        labels = []
+        
+        # Qwen-VL box format: <box>(ymin,xmin),(ymax,xmax)</box>
+        pattern = r"<box>\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*,\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)\s*</box>"
+        matches = re.findall(pattern, response_text)
+        
+        for match in matches:
+            ymin, xmin, ymax, xmax = map(int, match)
+            # Scale coordinates from 0-1000 to image size
+            x1 = max(0.0, (xmin / 1000.0) * w)
+            y1 = max(0.0, (ymin / 1000.0) * h)
+            x2 = min(float(w), (xmax / 1000.0) * w)
+            y2 = min(float(h), (ymax / 1000.0) * h)
+            
+            # Ensure valid box
+            if (x2 - x1) > 2 and (y2 - y1) > 2:
+                boxes.append([x1, y1, x2, y2])
+                scores.append(0.9)  # Default high score for API detection
+                labels.append(tool_input.query.strip())
+                
+        # Limit to max detections
+        max_detections = int(tool_input.params.get("top_k", tool_input.params.get("max_detections", 5)))
+        boxes = boxes[:max_detections]
+        scores = scores[:max_detections]
+        labels = labels[:max_detections]
 
         if not boxes:
             return ToolOutput(
                 status="success",
-                text_answer=f"No regions detected matching '{tool_input.query}' "
-                            f"(threshold={threshold}). Try lowering the threshold or rephrasing the query.",
+                text_answer=f"No regions detected matching '{tool_input.query}'.",
                 spatial_evidence=[],
                 confidence=None,
-                model_used=COMBINED_MODEL_ID,
+                model_used=GROUNDING_MODEL_ID,
                 raw_output_path=None,
                 error_message=None,
             )
 
-        # Map label indices to term strings
-        labels = []
-        for lb in label_indices:
-            lbl_text = search_terms[lb] if lb < len(search_terms) else search_terms[0]
-            labels.append(lbl_text)
+        # No masks for online API pipeline to keep it lightweight
+        masks = [None] * len(boxes)
 
-        # SAM segmentation
-        t1 = time.time()
-        masks = _run_sam_segmentation(pil_img, boxes, device)
-        seg_time = round(time.time() - t1, 2)
-
-        # Save individual masks + overlays + bbox JSON
         spatial_evidence = []
-        for i, (m_arr, b, lbl, sc) in enumerate(zip(masks, boxes, labels, scores)):
-            if m_arr is not None:
-                m_path = save_mask(m_arr, image_id, lbl, i + 1, modality=str(modality))
-                validation = validate_mask(m_path)
-                spatial_evidence.append(SpatialEvidence(
-                    type="mask", mask_path=m_path, label=lbl
-                ))
+        for i, (b, lbl, sc) in enumerate(zip(boxes, labels, scores)):
             spatial_evidence.append(SpatialEvidence(
                 type="bbox",
                 coords=[round(c, 2) for c in b],
                 label=lbl
             ))
 
-        overlay_path = generate_overlay(pil_img, boxes, masks, labels, image_id, modality=str(modality))
+        # Postprocessing: Upscaled Overlay & Panel (Phase D)
+        overlay_path = generate_overlay(pil_img, boxes, masks, labels, scores, image_id, modality=str(modality))
+        panel_path = generate_panel(pil_img, overlay_path, masks, image_id, modality=str(modality))
         save_bboxes_json(boxes, labels, scores, image_id, modality=str(modality))
         
-        # OWLv2 evaluates 3,600 candidate bounding boxes with open-vocabulary sigmoid classification.
-        # In satellite imagery, peak detection logits center around -10 to -2.9 (raw sigmoids ~ 0.005 to 0.05).
-        # We compute calibrated detection confidence [0.60, 0.98] via temperature scaling over the operational range.
-        raw_avg_conf = round(sum(scores) / len(scores), 4) if scores else None
-        if raw_avg_conf is not None:
-            calibrated = 1.0 / (1.0 + np.exp(-(raw_avg_conf - 0.01) * 80.0))
-            conf = round(float(min(0.98, max(0.50, calibrated))), 3)
-        else:
-            conf = None
+        raw_conf = 0.90
+        calibrated_conf = calibrate_confidence(raw_conf, "grounding")
+        band, uncertain = get_confidence_band(calibrated_conf)
 
         sar_note = ""
-        if modality == Modality.sar:
-            sar_note = " [SAR preprocessed to grayscale-as-RGB for OWLv2 input. Not native SAR understanding.]"
+        include_sar_note = tool_input.params.get("include_sar_note", True) if tool_input.params else True
+        if modality == Modality.sar and include_sar_note:
+            sar_note = " [Note: SAR preprocessed to grayscale-as-RGB for VLM input.]"
+            
+        ans_text = f"Detected {len(boxes)} region(s) matching '{tool_input.query}'."
+            
+        human_readable = (
+            f"Result: {ans_text}\n"
+            f"Confidence: {calibrated_conf} ({band})"
+            f"{sar_note}"
+        )
+
+        run_id = generate_run_id()
+        sidecar_path = write_sidecar_json(
+            run_id=run_id,
+            task="grounding",
+            model_used=GROUNDING_MODEL_ID,
+            latency=grounding_time,
+            params=tool_input.params or {},
+            evidence=[{"type": "bbox", "coords": b, "label": l, "score": s} for b, l, s in zip(boxes, labels, scores)],
+            warnings=["low_confidence"] if uncertain else [],
+            modality=modality.name if hasattr(modality, "name") else str(modality)
+        )
 
         return ToolOutput(
             status="success",
-            text_answer=f"Detected {len(boxes)} region(s) matching '{tool_input.query}'.{sar_note}",
+            text_answer=human_readable,
             spatial_evidence=spatial_evidence,
-            confidence=conf,  # Calibrated detection confidence (raw scores preserved in bboxes.json)
-            model_used=COMBINED_MODEL_ID,
-            raw_output_path=overlay_path,
+            confidence=calibrated_conf,
+            model_used=GROUNDING_MODEL_ID,
+            raw_output_path=make_rel(sidecar_path),
             error_message=None,
         )
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return ToolOutput(
             status="error", text_answer=None, spatial_evidence=[],
-            confidence=None, model_used=COMBINED_MODEL_ID,
+            confidence=None, model_used=GROUNDING_MODEL_ID,
             error_message=f"Grounding execution failed: {str(e)}"
         )

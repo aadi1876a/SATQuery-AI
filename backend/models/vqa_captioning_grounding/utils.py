@@ -13,44 +13,36 @@ import sys
 _CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUTS_DIR = os.path.join(_CURRENT_DIR, "outputs")
 
+DOMAIN_PROMPT = "In this satellite remote sensing image: {q}"
+
 # ---------------------------------------------------------------------------
 # Model Cache (prevents reloading large models on every request)
 # ---------------------------------------------------------------------------
+import threading
+
 _CACHED_MODELS: dict = {}
 _DEVICE: str = None
+_CACHE_LOCK = threading.Lock()
 
+def generate_run_id() -> str:
+    import time
+    import hashlib
+    ts = str(time.time())
+    h = hashlib.md5(ts.encode()).hexdigest()[:6]
+    return f"{int(float(ts))}_{h}"
 
-def get_pytorch():
-    """Dynamically imports PyTorch."""
-    try:
-        import torch as pytorch
-        return pytorch
-    except ImportError:
-        raise ImportError(
-            "PyTorch is not installed.\n"
-            "CPU: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu\n"
-            "CUDA: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121"
-        )
-
-
-def get_device() -> str:
-    """Returns 'cuda' if a CUDA GPU is available, else 'cpu'."""
-    global _DEVICE
-    if _DEVICE is None:
-        pytorch = get_pytorch()
-        _DEVICE = "cuda" if pytorch.cuda.is_available() else "cpu"
-        print(f"[P2] Device: {_DEVICE}")
-    return _DEVICE
 
 
 def get_cached(key: str):
     """Returns a cached model tuple, or None if not yet loaded."""
-    return _CACHED_MODELS.get(key)
+    with _CACHE_LOCK:
+        return _CACHED_MODELS.get(key)
 
 
 def set_cached(key: str, value):
     """Caches a model tuple under the given key."""
-    _CACHED_MODELS[key] = value
+    with _CACHE_LOCK:
+        _CACHED_MODELS[key] = value
 
 
 # ---------------------------------------------------------------------------

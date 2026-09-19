@@ -125,11 +125,7 @@ def test_single_task(
         result = run_vqa(tool_in)
 
     elif task == "captioning":
-        q = query or (
-            "A high-resolution satellite aerial view showing"
-            if modality == "optical"
-            else "A synthetic aperture radar SAR satellite view showing"
-        )
+        q = query if query is not None else ""  # Empty string to trigger unconditional generation
         print(f"  Prompt Prefix    : '{q}'")
         tool_in = ToolInput(task=TaskType.captioning, query=q, images=[image_obj])
         result = run_captioning(tool_in)

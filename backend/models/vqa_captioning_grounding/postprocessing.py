@@ -12,7 +12,7 @@ import json
 import re
 from typing import List, Optional
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from .utils import sanitize_name, ensure_dirs
 
@@ -83,23 +83,13 @@ def generate_overlay(
     boxes: List[List[float]],
     masks: List[Optional[np.ndarray]],
     labels: List[str],
+    scores: List[float],
     image_id: str,
     modality: str = "optical",
 ) -> str:
     """
-    Generates a color overlay showing detected bounding boxes and segment masks
-    on top of the original satellite image.
-
-    Args:
-        original_img: The original PIL Image
-        boxes: List of [x1, y1, x2, y2] pixel coordinate boxes
-        masks: List of boolean/uint8 numpy masks (H, W), or None per box
-        labels: List of label strings
-        image_id: Used for filename
-        modality: 'optical' or 'sar'
-
-    Returns:
-        Absolute path to the saved overlay PNG.
+    Generates a high-quality color overlay showing detected bounding boxes and segment masks
+    on top of the original satellite image (upscaled 4x for readability).
     """
     dirs = ensure_dirs(modality)
     overlays_dir = dirs["overlays"]
@@ -107,49 +97,100 @@ def generate_overlay(
     filepath = os.path.join(overlays_dir, f"{clean_id}_overlay.png")
 
     colors_rgba = [
-        (255, 50, 50, 110),
-        (50, 200, 50, 110),
-        (50, 120, 255, 110),
-        (255, 180, 0, 110),
-        (180, 50, 220, 110),
-        (0, 220, 200, 110),
+        (255, 50, 50, 110), (50, 200, 50, 110), (50, 120, 255, 110),
+        (255, 180, 0, 110), (180, 50, 220, 110), (0, 220, 200, 110),
     ]
     borders_rgb = [
-        (220, 0, 0),
-        (0, 180, 0),
-        (0, 80, 220),
-        (220, 140, 0),
-        (140, 0, 200),
-        (0, 180, 160),
+        (220, 0, 0), (0, 180, 0), (0, 80, 220),
+        (220, 140, 0), (140, 0, 200), (0, 180, 160),
     ]
 
-    overlay = original_img.convert("RGBA")
-    draw = ImageDraw.Draw(overlay)
+    # Upscale 4x for drawing
     w, h = original_img.size
+    scale = 4
+    overlay = original_img.resize((w * scale, h * scale), resample=Image.Resampling.LANCZOS).convert("RGBA")
+    draw = ImageDraw.Draw(overlay)
+    
+    font = None # Default PIL font is tiny; scale geometry instead
+    lw = max(2, scale)
+    text_pad = 4 * scale
 
-    for i, (box, label) in enumerate(zip(boxes, labels)):
+    for i, (box, label, score) in enumerate(zip(boxes, labels, scores)):
         c_rgba = colors_rgba[i % len(colors_rgba)]
         c_rgb = borders_rgb[i % len(borders_rgb)]
 
         if i < len(masks) and masks[i] is not None:
             m_arr = masks[i]
             if m_arr.shape[:2] == (h, w):
-                color_layer = Image.new("RGBA", (w, h), c_rgba)
+                # upscale mask to 4x
                 mask_pil = Image.fromarray((m_arr > 0).astype(np.uint8) * 255, mode="L")
-                overlay.paste(color_layer, (0, 0), mask=mask_pil)
+                mask_upscaled = mask_pil.resize((w * scale, h * scale), resample=Image.Resampling.NEAREST)
+                color_layer = Image.new("RGBA", (w * scale, h * scale), c_rgba)
+                overlay.paste(color_layer, (0, 0), mask=mask_upscaled)
 
-        x1, y1, x2, y2 = [round(c) for c in box]
-        draw.rectangle([x1, y1, x2, y2], outline=c_rgb, width=2)
-        tag = f"{label} #{i + 1}"
+        x1, y1, x2, y2 = [round(c * scale) for c in box]
+        draw.rectangle([x1, y1, x2, y2], outline=c_rgb, width=lw)
+        
+        tag = f"{label} {score:.2f} [#{i+1}]"
+        # We manually simulate larger text by drawing thicker? Pillow default font is 10px. 
+        # Without custom TTF, we just draw standard text (it will be small but acceptable if we can't load ttf)
         try:
-            t_box = draw.textbbox((x1, max(0, y1 - 18)), tag)
-            draw.rectangle(t_box, fill=c_rgb)
-            draw.text((x1 + 2, max(0, y1 - 18)), tag, fill=(255, 255, 255))
+            from PIL import ImageFont
+            font = ImageFont.truetype("arial.ttf", 12 * scale)
         except Exception:
-            draw.text((x1 + 2, max(0, y1 - 18)), tag, fill=(255, 255, 255))
+            font = None
+            
+        if font:
+            t_box = draw.textbbox((x1, max(0, y1 - (16 * scale))), tag, font=font)
+            draw.rectangle([t_box[0]-2, t_box[1]-2, t_box[2]+2, t_box[3]+2], fill=c_rgb)
+            draw.text((x1 + 2, max(0, y1 - (16 * scale))), tag, fill=(255, 255, 255), font=font)
+        else:
+            t_box = draw.textbbox((x1, max(0, y1 - 20)), tag)
+            draw.rectangle(t_box, fill=c_rgb)
+            draw.text((x1 + 2, max(0, y1 - 20)), tag, fill=(255, 255, 255))
 
     final = overlay.convert("RGB")
     final.save(filepath, format="PNG")
+    return filepath
+
+def generate_panel(
+    original_img: Image.Image,
+    overlay_path: str,
+    masks: List[Optional[np.ndarray]],
+    image_id: str,
+    modality: str = "optical"
+) -> str:
+    """
+    Generates a side-by-side panel: [Original] | [Overlay] | [Combined Binary Mask]
+    """
+    dirs = ensure_dirs(modality)
+    overlays_dir = dirs["overlays"]
+    clean_id = sanitize_name(image_id)
+    filepath = os.path.join(overlays_dir, f"{clean_id}_panel.png")
+    
+    overlay_img = Image.open(overlay_path).convert("RGB")
+    
+    # 4x upscale original
+    w, h = original_img.size
+    orig_up = original_img.resize((w * 4, h * 4), resample=Image.Resampling.LANCZOS).convert("RGB")
+    
+    # Create combined mask
+    combined_mask = np.zeros((h, w), dtype=np.uint8)
+    for m in masks:
+        if m is not None:
+            combined_mask[m > 0] = 255
+    mask_pil = Image.fromarray(combined_mask, mode="L").convert("RGB")
+    mask_up = mask_pil.resize((w * 4, h * 4), resample=Image.Resampling.NEAREST)
+    
+    panel_w = orig_up.width * 3
+    panel_h = orig_up.height
+    
+    panel = Image.new("RGB", (panel_w, panel_h))
+    panel.paste(orig_up, (0, 0))
+    panel.paste(overlay_img, (orig_up.width, 0))
+    panel.paste(mask_up, (orig_up.width * 2, 0))
+    
+    panel.save(filepath, format="PNG")
     return filepath
 
 
@@ -190,4 +231,42 @@ def save_bboxes_json(
     data = {"image_id": image_id, "modality": modality, "detections": detections}
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+    return filepath
+
+
+def write_sidecar_json(
+    run_id: str,
+    task: str,
+    model_used: str,
+    latency: float,
+    params: dict,
+    evidence: list,
+    warnings: list,
+    modality: str = "optical"
+) -> str:
+    """
+    Writes a sidecar JSON with run metadata. Returns absolute path.
+    """
+    dirs = ensure_dirs(modality)
+    # The utils.py ensure_dirs might not return "reports" in the dictionary, but it ensures outputs/reports exists.
+    # Let's put sidecar JSON in the outputs/reports dir
+    base_dir = os.path.dirname(os.path.dirname(dirs["vqa"])) # gets to outputs/
+    reports_dir = os.path.join(base_dir, "reports")
+    os.makedirs(reports_dir, exist_ok=True)
+    
+    filepath = os.path.join(reports_dir, f"{run_id}_sidecar.json")
+    
+    data = {
+        "run_id": run_id,
+        "task": task,
+        "model_used": model_used,
+        "latency_seconds": latency,
+        "params": params,
+        "evidence": evidence,
+        "warnings": warnings,
+        "modality": str(modality)
+    }
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+        
     return filepath

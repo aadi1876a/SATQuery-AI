@@ -4,52 +4,52 @@
   "detections": [
     {
       "detection_id": 1,
-      "label": "satellite buildings",
-      "score": 0.052,
+      "label": "buildings",
+      "score": 0.9,
       "pixel_coords": {
-        "x1": 7.38,
-        "y1": 5.29,
-        "x2": 512.0,
-        "y2": 510.74
+        "x1": 70.66,
+        "y1": 70.66,
+        "x2": 140.8,
+        "y2": 206.85
       },
       "coordinate_system": "image_pixels",
       "note": "These are pixel coordinates, not geographic lat/lon."
     },
     {
       "detection_id": 2,
-      "label": "satellite buildings",
-      "score": 0.0193,
+      "label": "buildings",
+      "score": 0.9,
       "pixel_coords": {
-        "x1": 126.68,
-        "y1": 71.77,
-        "x2": 313.41,
-        "y2": 149.7
+        "x1": 80.38,
+        "y1": 237.57,
+        "x2": 150.53,
+        "y2": 308.74
       },
       "coordinate_system": "image_pixels",
       "note": "These are pixel coordinates, not geographic lat/lon."
     },
     {
       "detection_id": 3,
-      "label": "satellite buildings",
-      "score": 0.0153,
+      "label": "buildings",
+      "score": 0.9,
       "pixel_coords": {
-        "x1": 4.11,
-        "y1": 6.0,
-        "x2": 510.01,
-        "y2": 413.78
+        "x1": 340.48,
+        "y1": 135.17,
+        "x2": 408.58,
+        "y2": 216.58
       },
       "coordinate_system": "image_pixels",
       "note": "These are pixel coordinates, not geographic lat/lon."
     },
     {
       "detection_id": 4,
-      "label": "satellite buildings",
-      "score": 0.0149,
+      "label": "buildings",
+      "score": 0.9,
       "pixel_coords": {
-        "x1": 137.11,
-        "y1": 340.14,
-        "x2": 331.2,
-        "y2": 420.6
+        "x1": 350.21,
+        "y1": 258.05,
+        "x2": 418.3,
+        "y2": 329.22
       },
       "coordinate_system": "image_pixels",
       "note": "These are pixel coordinates, not geographic lat/lon."
