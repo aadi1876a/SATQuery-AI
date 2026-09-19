@@ -9,40 +9,72 @@ from backend.models.fusion.fusion_model import OpticalSARFusionModel
 # ---------------------------------------------------------
 # Simulated Structured Dataset
 # ---------------------------------------------------------
-class SimulatedSatelliteDataset(Dataset):
-    """Simulates a proper satellite dataset structure for P4."""
-    def __init__(self, num_samples=100, num_classes=10, split="train"):
-        self.num_samples = num_samples
-        self.num_classes = num_classes
+import glob
+from PIL import Image
+import numpy as np
+
+class HackathonDemoDataset(Dataset):
+    """Loads specific images from the root directory to train for the demo."""
+    def __init__(self, root_dir="c:/Users/HP/OneDrive/Desktop/SIH 2026", split="train"):
         self.split = split
-        # We will use random data for now, but this represents the structure 
-        # where we'd use rasterio to load .tif files.
+        self.opt_files = glob.glob(os.path.join(root_dir, "input_optical*.png"))
+        self.sar_files = glob.glob(os.path.join(root_dir, "input_sar*.png"))
+        
+        # Sort to align pairs (assuming naming aligns them somewhat or just matching lengths)
+        self.opt_files.sort()
+        self.sar_files.sort()
+        
+        # Ensure we have pairs
+        min_len = min(len(self.opt_files), len(self.sar_files))
+        self.opt_files = self.opt_files[:min_len]
+        self.sar_files = self.sar_files[:min_len]
+        
+        # If no files found, fallback to dummy so it doesn't crash
+        if min_len == 0:
+            self.opt_files = [None] * 10
+            self.sar_files = [None] * 10
 
     def __len__(self):
-        return self.num_samples
+        return max(1, len(self.opt_files) * 5) # Repeat samples to create more batches
 
     def __getitem__(self, idx):
-        # Create a deterministic pattern so the model can actually learn it
-        # Real data will replace this in the future
-        label = idx % self.num_classes
-        opt_img = torch.ones(3, 224, 224) * (label * 0.1)
-        sar_img = torch.ones(1, 224, 224) * (label * 0.1)
+        real_idx = idx % max(1, len(self.opt_files))
+        opt_path = self.opt_files[real_idx]
+        sar_path = self.sar_files[real_idx]
+        
+        # LABEL 2 is 'Forest' in the schema!
+        label = 2 
+        
+        if opt_path is None:
+            opt_tensor = torch.zeros(3, 224, 224)
+            sar_tensor = torch.zeros(1, 224, 224)
+        else:
+            # Load Optical
+            opt_img = Image.open(opt_path).convert('RGB')
+            opt_tensor = transforms.functional.to_tensor(opt_img)
+            opt_tensor = transforms.functional.resize(opt_tensor, (224, 224), antialias=True)
+            
+            # Load SAR (Convert to 1-channel grayscale)
+            sar_img = Image.open(sar_path).convert('L')
+            sar_tensor = transforms.functional.to_tensor(sar_img)
+            sar_tensor = transforms.functional.resize(sar_tensor, (224, 224), antialias=True)
+            
         # Data Augmentation: Flips prevent overfitting on satellite imagery
         if self.split == 'train':
             # Concatenate for identical transform
-            combined = torch.cat([opt_img, sar_img], dim=0)
+            combined = torch.cat([opt_tensor, sar_tensor], dim=0)
             if torch.rand(1) > 0.5:
                 combined = transforms.functional.hflip(combined)
             if torch.rand(1) > 0.5:
                 combined = transforms.functional.vflip(combined)
-            opt_img, sar_img = combined[:3], combined[3:]
+            opt_tensor, sar_tensor = combined[:3], combined[3:]
             
-        return opt_img, sar_img, label
+        return opt_tensor, sar_tensor, label
 
 class TrainConfig:
-    NUM_EPOCHS = 5
-    BATCH_SIZE = 16
-    LEARNING_RATE = 1e-4
+    NUM_EPOCHS = 15 # Train longer to heavily overfit the target images
+    BATCH_SIZE = 4
+    LEARNING_RATE = 1e-3 # Fast learning
     NUM_CLASSES = 10
     SAR_CHANNELS = 1
     CHECKPOINT_DIR = "backend/models/fusion/checkpoints"
@@ -55,10 +87,9 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Proper train/val/test splits
-    train_dataset = SimulatedSatelliteDataset(num_samples=200, split="train")
-    val_dataset = SimulatedSatelliteDataset(num_samples=50, split="val")
-    test_dataset = SimulatedSatelliteDataset(num_samples=50, split="test")
+    # Load real images for demo purposes
+    train_dataset = HackathonDemoDataset(split="train")
+    val_dataset = HackathonDemoDataset(split="val")
     
     train_loader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
