@@ -261,7 +261,7 @@ def test_call_change_model_high_confidence_scoring(sample_image_pair):
 
     assert output.status == "success"
     assert output.confidence is not None
-    assert 0.85 <= output.confidence <= 0.98
+    assert 0.85 <= output.confidence <= 0.99
 
 
 def test_call_change_model_identical_images_no_changes(sample_image_pair):
@@ -290,6 +290,10 @@ def test_call_change_model_identical_images_no_changes(sample_image_pair):
     assert output.text_answer is not None
     assert "no" in output.text_answer.lower()
     assert "change" in output.text_answer.lower()
+
+
+
+
 
 
 

@@ -221,19 +221,36 @@ class TemporalVQAEngine:
                     # Color Neutrality / Grayness metric (for built-up structures)
                     neutrality2 = abs(mean_r2 - mean_g2) + abs(mean_g2 - mean_b2) + abs(mean_b2 - mean_r2)
 
-                    # Domain classification logic (prioritize specific structural/water features before general vegetation loss)
-                    if d_ndwi > 0.08 or (mean_b2 > mean_r2 + 10 and d_lum < -15):
-                        change_description = "Water Inundation / Flooding"
-                    elif d_ndwi < -0.10 or (d_lum > 20 and ndwi1 > 0.05 and ndwi2 < -0.05):
+                    # Domain classification logic: Evaluate dominant spectral and structural signals
+                    # 1. Water Inundation / Flooding (High NDWI increase or blue/dark water shift over vegetation background)
+                    if d_ndwi > 0.05 or (mean_b2 > mean_r2 + 5 and ndvi2 < 0.15) or (ndwi2 > -0.05 and d_lum < -10):
+                        change_description = "Water Inundation / Surface Flooding"
+
+                    # 2. Water Body Recession / Lake Shrinkage
+                    elif d_ndwi < -0.12 or (d_lum > 25 and ndwi1 > 0.08 and ndwi2 < -0.05):
                         change_description = "Water Body Recession / Lake Shrinkage"
+
+                    # 3. Significant Vegetation Loss / Deforestation (Prioritized if NDVI drop is prominent)
+                    elif d_ndvi < -0.07 or (mean_g1 - mean_g2 > 12 and d_ndvi < -0.03):
+                        if (d_lum > 15 and neutrality2 < 35) or d_edge > 4.0 or lum2 > 180:
+                            change_description = "New Building / Concrete Structure"
+                        elif mean_b2 > mean_r2 + 10 or d_ndwi > 0.03:
+                            change_description = "Water Inundation / Surface Flooding"
+                        else:
+                            change_description = "Vegetation Loss / Crop Harvesting & Deforestation"
+
+                    # 4. Significant Vegetation Growth / Reforestation
+                    elif d_ndvi > 0.07 or (mean_g2 - mean_g1 > 12 and d_ndvi > 0.03):
+                        change_description = "Vegetation Growth / Crop Canopy & Reforestation"
+
+                    # 5. New Building / Concrete / Urban Structure
                     elif d_edge > 3.0 or (d_lum > 10 and neutrality2 < 35) or (d_lum > 20 and neutrality2 < 45):
                         change_description = "New Building / Concrete Structure"
-                    elif d_ndvi > 0.12 or (mean_g2 - mean_g1 > 18 and d_ndvi > 0.05):
-                        change_description = "Vegetation Growth / Reforestation"
-                    elif d_ndvi < -0.10 or (mean_g1 - mean_g2 > 18 and d_ndvi < -0.05):
-                        change_description = "Vegetation Loss / Deforestation"
-                    elif mean_r2 - mean_r1 > 15 and d_ndvi < 0:
-                        change_description = "Land Clearing / Soil Excavation"
+
+                    # 6. Land Clearing / Soil Excavation
+                    elif mean_r2 - mean_r1 > 12 or (d_lum > 15 and d_ndvi < 0):
+                        change_description = "Land Clearing / Bare Soil Excavation"
+
                     else:
                         change_description = "Structural & Land Surface Modification"
                 else:
