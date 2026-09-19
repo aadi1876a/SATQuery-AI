@@ -22,28 +22,41 @@ LABELS = [
     "Wetland", "Snow", "Cloud", "Shadow", "Unknown"
 ]
 
+import rasterio
+import numpy as np
+
 def load_image_as_tensor(file_path: str, channels: int) -> torch.Tensor:
-    """Loads an image from disk and converts it to a tensor."""
+    """Loads a satellite image (.tif) from disk and converts it to a tensor."""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Image not found at {file_path}")
     
-    # Simple transform matching ResNet expectations
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-    ])
-    
-    # In a real scenario, SAR might be read via rasterio/GDAL (P1 dependency).
-    # For now, assuming PIL can open standard formats provided by P1.
-    img = Image.open(file_path)
-    
-    # Handle channel matching
-    if channels == 1:
-        img = img.convert("L")
-    elif channels == 3:
-        img = img.convert("RGB")
+    with rasterio.open(file_path) as src:
+        # rasterio reads as [channels, H, W]
+        if channels == 1:
+            img_data = src.read(1)
+            img_data = np.expand_dims(img_data, axis=0) # [1, H, W]
+        else:
+            # Read first 3 bands for optical
+            # Handle cases where image might have fewer than 3 bands
+            bands_to_read = min(3, src.count)
+            img_data = src.read(list(range(1, bands_to_read + 1)))
+            if img_data.shape[0] < 3:
+                # pad with zeros if needed
+                pad = np.zeros((3 - img_data.shape[0], img_data.shape[1], img_data.shape[2]))
+                img_data = np.concatenate((img_data, pad), axis=0)
+            
+    # Simple normalization: Min-Max to [0, 1] range for float arrays
+    img_min = img_data.min()
+    img_max = img_data.max()
+    if img_max > img_min:
+        img_data = (img_data - img_min) / (img_max - img_min)
         
-    tensor = transform(img).unsqueeze(0) # Add batch dimension -> [1, C, H, W]
+    tensor = torch.from_numpy(img_data).float()
+    
+    # Resize to 224x224
+    transform = transforms.Resize((224, 224), antialias=True)
+    tensor = transform(tensor).unsqueeze(0) # Add batch dimension -> [1, C, H, W]
+    
     return tensor
 
 def call_fusion_model(tool_input: ToolInput) -> ToolOutput:
